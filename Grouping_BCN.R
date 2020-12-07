@@ -22,9 +22,9 @@ bcn %>%
 # [3] 42. la Clota                                        
 # [4] 47. Can Peguera                                     
 # [5] 49. Canyelles                                       
-# [6] 54. Torre Baró                                      
+# [6] 54. Torre Bar?                                      
 # [7] 56. Vallbona                                        
-# [8] 58. Baró de Viver 
+# [8] 58. Bar? de Viver 
 
 
 # Top 10 Barrios for Women
@@ -77,7 +77,7 @@ foreign <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2018_do
 glimpse(foreign)
 
 foreign %>% 
-  mutate(nationality = case_when(Nacionalitat %in% c("1 espanyol", "2 espanyols", "3 espanyols", "4 espanyols o més") ~ "National",
+  mutate(nationality = case_when(Nacionalitat %in% c("1 espanyol", "2 espanyols", "3 espanyols", "4 espanyols o m?s") ~ "National",
                                  TRUE ~ "Foreigner")) %>%
   group_by(Nom_Districte, Codi_Barri, Nom_Barri, nationality) %>% 
   summarize(N_nationality = sum(Nombre)) %>% 
@@ -161,13 +161,54 @@ size_flat %>%
   mutate(size = case_when(Desc_sup %in% c("Fins a 30 m2", "31- 60 m2") ~"01 S (Up to 60m2)",
                           Desc_sup %in% c("61- 90 m2", "91- 120 m2") ~"02 M (60 to 120m2)",
                           Desc_sup %in% c("121- 150 m2", "151- 210 m2") ~"03 L (120 to 210m2)",
-                          Desc_sup %in% c("211- 250 m2", "Més de 250 m2") ~"04 XL (més 210m2)",
+                          Desc_sup %in% c("211- 250 m2", "M?s de 250 m2") ~"04 XL (m?s 210m2)",
                           TRUE ~ "CHECK"
                           )) %>% 
   select(Nom_districte, Nom_barri, size, Nombre) %>%
   group_by(Nom_districte, Nom_barri, size) %>% 
   summarize(N = sum(Nombre)) %>% 
   pivot_wider(names_from = size, values_from = N) 
+
+
+#####################################################
+# Dynamic stock of net migration by nationality
+
+inm_nac <- read_csv("02 - Data/Time Series Ethnic change/2018_immigrants_nacionalitats.csv")
+emi_nac <- read_csv("02 - Data/Time Series Ethnic change/2018_emigrants_nacionalitats.csv")
+
+
+inm_nac %>% 
+    select(Nom_districte, Codi_barri, Nacionalitats, Nombre) %>%
+    pivot_wider(names_from = Nacionalitats, values_from = Nombre) %>% 
+    rename( spanish_inm = Espanyola,
+            foreing_inm = Estrangera) -> inm_nac
+
+emi_nac %>% 
+    select(Nom_districte, Codi_barri, Nacionalitats, Nombre) %>%
+    pivot_wider(names_from = Nacionalitats, values_from = Nombre) %>% 
+    rename( spanish_emi = Espanyola,
+            foreing_emi = Estrangera) -> emi_nac
+  
+
+total_movement <- left_join(inm_nac, emi_nac, by=c("Nom_districte","Codi_barri")) %>% 
+                    mutate(spanish_net_move = spanish_inm - spanish_emi,
+                           foreign_net_move = foreing_inm - foreing_emi) %>%
+                    mutate(Codi_barri = as.factor(str_pad(Codi_barri, width=2, side="left", pad="0"))) %>% 
+                    rename(BARRI = Codi_barri)
+  
+# Net migration for spaniards
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(total_movement, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = spanish_net_move))
+
+# Net migration for foreigners
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(total_movement, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = foreign_net_move))
 
 
   
@@ -182,7 +223,7 @@ library(magrittr)
 
 url_vote <- "https://www.bcn.cat/estadistica/catala/dades/barris/telec/loc/a2015.htm"
 
-pagina <- read_html(url_vote, as.data.frame=T, stringsAsFactors = TRUE)
+pagina <- read_html(url_vote, as.data.frame=T, stringsAsFactors = TRUE, encoding = "utf8")
 
 pagina %>% 
   #Here, we indicate that this is the table we want to extract.
@@ -197,6 +238,41 @@ names_voters <- as.list(temp_table[7,])
 value_voters <- temp_table[12:(73+12-1),]
 names(value_voters) <- names_voters
 
+
+# Counting votes to political left
+# LEFT = BComÃº-E + ERC-AM + PSC-CP + CUP-PA
+value_voters[,4:16] %>% 
+  mutate(left_vote = as.numeric(gsub(".", "", `BCom<U+663C><U+3E61>-E`)) +
+                     as.numeric(gsub(".", "", `ERC-AM`)) +
+                     as.numeric(gsub(".", "", `PSC-CP`)) +
+                     as.numeric(gsub(".", "", `CUP-PA`)),
+         total_votes = as.numeric(gsub(".", "", `Votants`))
+  )
+
+
+votes <- read_csv("02 - Data/2015_Eleccions_Locals.csv")
+
+votes %>% 
+  mutate(left_vote = `BComu-E` + `ERC-AM` + `PSC-CP` + `CUP-PA`,
+         indep_vote = CiU + `ERC-AM` + `CUP-PA`,
+         perc_left = left_vote / Votants,
+         perc_indep = indep_vote / Votants) -> votes
+
+
+# More votes to catalan parties
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(votes, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_indep))
+
+
+# More votes to leftist parties
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(votes, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_left))
 
 
 
@@ -228,7 +304,7 @@ library(colorspace)
 # Reading the json with sf::st_read and saving the map information for Argentina
 # web <- "https://opendata-ajuntament.barcelona.cat/data/dataset/808daafa-d9ce-48c0-925a-fa5afdb1ed41/resource/cd800462-f326-429f-a67a-c69b7fc4c50a/download"
 
-bcn_map <- st_read("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/Maps/0301100100_UNITATS_ADM_POLIGONS.json")
+bcn_map <- st_read("02 - Data/Maps/0301100100_UNITATS_ADM_POLIGONS.json")
 
 bcn_map2 <- bcn_map %>% filter(SCONJ_DESC == "Barri")
 
