@@ -280,6 +280,34 @@ bcn_map %>%
 # https://www.bcn.cat/estadistica/catala/dades/barris/telec/loc/a2015.htm
 
 
+######################################
+# Unitary Households by Barrio 2018
+
+uni_house <- read_csv("02 - Data/2018_Hog_Unipersonal.csv")
+pop_bcn <- read_csv("02 - Data/2018_padro_ocupacio_mitjana.csv")
+
+pop_bcn <- pop_bcn %>% 
+            select(Codi_Barri, Poblacio, Domicilis) %>%
+            mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>% 
+            rename(BARRI = Codi_Barri)
+
+uni_house_pop <- uni_house %>% 
+                  left_join(pop_bcn, by="BARRI") %>%
+                  mutate(perc_domi_uni = Total / Domicilis)
+                  
+
+
+# % Unipersonal Households by Barri
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(uni_house_pop, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_domi_uni))
+
+
+
+# Source:
+# https://www.bcn.cat/estadistica/castella/dades/inf/llars/a2018/t102.htm
 
 
 ######################################
