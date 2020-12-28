@@ -3,9 +3,13 @@ library(tidyverse)
 library(readr)
 
 # Loading data
-bcn <- read.csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/Datos_inmi_BCN.csv", sep = ";", header = T, encoding = "UTF-8")
+bcn <- read.csv("02 - Data/Datos_inmi_BCN.csv", sep = ";", header = T, encoding = "UTF-8")
 
 glimpse(bcn)
+
+# Convert Barri code to factor
+bcn %>% 
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn
 
 
 # Quick tables
@@ -67,6 +71,63 @@ bcn %>%
   group_by(Barrio) %>% 
   mutate(dist_barrio = Casos / sum(Casos)) %>%
   arrange(desc(dist_barrio))
+
+
+
+# 2. Histogram of Nationalities to find the correct group by
+bcn %>% 
+  filter(Origin == "Ext") %>% 
+  group_by(Birth_Country) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>% 
+  arrange(desc(total)) -> nationalities
+
+# Grouping by into Europeans vs Latinos:
+bcn %>% 
+  mutate(nation = case_when(as.character(Birth_Country) %in% c("Resta Unió Europea", "Itàlia", "França", "Regne Unir", "Alemanya") ~ "European",
+                            as.character(Birth_Country) %in% c("Argentina", "Veneçuela", "Colòmbia", "Brasil", "Mèxic", "Xile", "Perú", "Equador", "República Dominicana", "Hondures", "Uruguai", "Bolívia", "Paraguai", "Cuba") ~ "Latino",
+                            TRUE ~ as.character(Birth_Country))) -> bcn
+
+# Check:
+bcn %>% 
+  filter(nation == "European" | nation == "Latino") %>% 
+  group_by(BARRI, NOM, nation) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>% 
+  pivot_wider(names_from = nation, values_from = total) %>% 
+  mutate(prevalence = European - Latino) -> prevalence_by_barri
+
+
+# Top Barris per origin
+prevalence_by_barri %>%
+  arrange(desc(Latino))
+
+
+# Europeans:
+  # 1. Raval
+  # 2. Grácia
+  # 3. Born
+  # 4. Gótic
+  # 5. Dreta de l'Eixample
+
+# Latinos:
+  # 1. Nova Esquerra de l'Eixample
+  # 2. Sagrada Família
+  # 3. Antiga Esquerra de l'Eixample
+  # 4. Grácia
+  # 5. Dreta de l'Eixample 
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(prevalence_by_barri, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = Latino))
+
+  
+
+
+
+
+
   
 
 ###############################################
