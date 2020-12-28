@@ -11,7 +11,18 @@ glimpse(bcn)
 bcn %>% 
   mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn
 
+####################################################################
+# Population of Barcelona by Barri
 
+pop_bcn <- read_csv("02 - Data/2018_padro_ocupacio_mitjana.csv")
+
+pop_bcn <- pop_bcn %>% 
+  select(Codi_Barri, Poblacio, Domicilis) %>%
+  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>% 
+  rename(BARRI = Codi_Barri)
+
+
+#####################################################
 # Quick tables
 
 # 1. Less than 100 movements per Barrio
@@ -380,10 +391,11 @@ bcn_map %>%
 
 
 ######################################
-# Nivel educativo por Barri
+# Population Structure per Barri
 
 demo_struc_barri <- read_csv("02 - Data/2018_ine_edat_any_a_any_per_sexe.csv")
 
+# This is the Sex-Age structure per barri, wihtout kids (since they cannot have University degrees)
 demo_struc_barri_2 <- demo_struc_barri %>%
                         mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0")),
                                edat_group = case_when(Edat < 15 ~ "01 - 0 a 14 anys",
@@ -392,53 +404,64 @@ demo_struc_barri_2 <- demo_struc_barri %>%
                                                       Edat >= 40 & Edat < 65 ~ "04 - 40 a 64 anys",
                                                       Edat >= 65 ~ "05 - 65 i mes"
                                                       )) %>% 
+                        filter(edat_group != "01 - 0 a 14 anys") %>% 
                         group_by(Codi_Barri, Sexe, edat_group) %>%
                         summarize(total_edat = sum(Nombre)) %>%
                         ungroup() %>%  
                         rename(BARRI = Codi_Barri)
 
-demo_struc_barri_tot <- demo_struc_barri_2 %>% 
+# Creating intermediate tables to calculate % by Age Group for each Sex and Barri, and % by Sex for each Barri
+demo_struc_barri_tot_sexe <- demo_struc_barri_2 %>% 
                           group_by(BARRI, Sexe) %>% 
-                          summarize(total_group = sum(total_edat))
+                          summarize(total_group_sexe = sum(total_edat))
+
+demo_struc_barri_tot_barri <- demo_struc_barri_2 %>% 
+                          group_by(BARRI) %>% 
+                          summarize(total_group_barri = sum(total_edat))
 
 
 demo_struc_barri_3 <- demo_struc_barri_2 %>% 
-  left_join(demo_struc_barri_tot, by=c("BARRI","Sexe")) %>%
-  mutate(perc_edat = total_edat / total_group) %>% 
-  select(BARRI, Sexe, edat_group, perc_edat) %>% 
-  pivot_wider(names_from = Sexe, values_from = perc_edat)
+  left_join(demo_struc_barri_tot_sexe, by=c("BARRI","Sexe")) %>%
+  mutate(perc_edat = total_edat / total_group_sexe) %>%
+  # Expected % University degree by Sex and Age group, based on Encuesta Sociodemográfica de Barcelona
+  mutate(standard = case_when(Sexe == "Dona" & edat_group == "02 - 15 a 24 anys" ~ 0.118625456,
+                              Sexe == "Dona" & edat_group == "03 - 25 a 39 anys" ~ 0.568616795,
+                              Sexe == "Dona" & edat_group == "04 - 40 a 64 anys" ~ 0.383737353,
+                              Sexe == "Dona" & edat_group == "05 - 65 i mes" ~ 0.141615998,
+                              
+                              Sexe == "Home" & edat_group == "02 - 15 a 24 anys" ~ 0.0689734025,
+                              Sexe == "Home" & edat_group == "03 - 25 a 39 anys" ~ 0.434937446,
+                              Sexe == "Home" & edat_group == "04 - 40 a 64 anys" ~ 0.338336146,
+                              Sexe == "Home" & edat_group == "05 - 65 i mes" ~ 0.241529018
+                              )) %>% 
+  left_join(demo_struc_barri_tot_barri, by=c("BARRI")) %>%
+  # Adding % of Sex by Barri and calculating weights
+  mutate(perc_sexe = total_group_sexe / total_group_barri,
+         uni_per_structure = perc_edat * perc_sexe * standard) %>%
+  group_by(BARRI) %>% 
+  # When summing up, got the expected % University degree by Barri
+  summarize(perc_university = sum(uni_per_structure))
   
 
-
-
-# % Men Pop 25 to 39 yo by Barri
+# Plotting
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(demo_struc_barri_3, by = "BARRI") %>%
-  filter(edat_group == "03 - 25 a 39 anys") %>% 
   ggplot() +
-  geom_sf(aes(fill = Home))
+  geom_sf(aes(fill = perc_university))
 
 
-# % Women Pop 25 to 39 yo by Barri
-bcn_map %>% 
-  filter(SCONJ_DESC == "Barri") %>% 
-  left_join(demo_struc_barri_3, by = "BARRI") %>%
-  filter(edat_group == "03 - 25 a 39 anys") %>% 
-  ggplot() +
-  geom_sf(aes(fill = Dona))
+
+
+
+
 
 
 ######################################
 # Unitary Households by Barrio 2018
 
 uni_house <- read_csv("02 - Data/2018_Hog_Unipersonal.csv")
-pop_bcn <- read_csv("02 - Data/2018_padro_ocupacio_mitjana.csv")
 
-pop_bcn <- pop_bcn %>% 
-            select(Codi_Barri, Poblacio, Domicilis) %>%
-            mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>% 
-            rename(BARRI = Codi_Barri)
 
 uni_house_pop <- uni_house %>% 
                   left_join(pop_bcn, by="BARRI") %>%
