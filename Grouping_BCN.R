@@ -192,14 +192,22 @@ cult %>%
 ##########################################
 # $$$ = economic capital
 
-money <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2017_rendatributariamitjanaperpersona.csv")
+money <- read_csv("02 - Data/2017_rendatributariamitjanaperpersona.csv")
 
 money %>% 
-  select(Nom_Districte, Nom_Barri, Import_Euros) %>%
-  group_by(Nom_Districte, Nom_Barri) %>% 
-  summarize(income = mean(Import_Euros)) %>% 
-  arrange(income)
-  
+  group_by(Codi_Barri, Seccio_Censal) %>% 
+  summarize(income = mean(Import_Euros)) %>%
+  ungroup() %>% 
+  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>%
+  rename(BARRI = Codi_Barri) -> money_v2
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(money_v2, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = income))
+
 
 #########################################
 # Bars per Barrio = cultural capital
