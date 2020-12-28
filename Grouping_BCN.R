@@ -120,11 +120,23 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(prevalence_by_barri, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = Latino))
-
-  
+  geom_sf(aes(fill = European))
 
 
+# Barris that will need to be put together
+bcn %>% 
+    filter(nation == "European") %>% 
+    group_by(NOM) %>% 
+    summarize(N = sum(Casos)) %>% 
+    filter(N < 15) %>% 
+    pull(NOM) # 10 barris that need new grouping for Europeans
+
+bcn %>% 
+  filter(nation == "Latino") %>% 
+  group_by(NOM) %>% 
+  summarize(N = sum(Casos)) %>% 
+  filter(N < 15) %>% 
+  pull(NOM) # 5 barris that need new grouping for Europeans
 
 
 
