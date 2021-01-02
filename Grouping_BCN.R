@@ -1,6 +1,9 @@
 # Importing libraries
 library(tidyverse)
 library(readr)
+library(ggplot2)
+library(sf)
+library(colorspace)
 
 # Loading data
 bcn <- read.csv("02 - Data/Datos_inmi_BCN.csv", sep = ";", header = T, encoding = "UTF-8")
@@ -107,6 +110,14 @@ bcn %>%
   mutate(prevalence = European - Latino) -> prevalence_by_barri
 
 
+# Check 2, by sex:
+bcn %>% 
+  filter(nation == "European" | nation == "Latino") %>% 
+  group_by(BARRI, NOM, nation, Sex) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>% 
+  pivot_wider(names_from = nation, values_from = total) %>% 
+  mutate(prevalence = European - Latino) -> prevalence_by_barri_sex
+
 # Top Barris per origin
 prevalence_by_barri %>%
   arrange(desc(Latino))
@@ -133,6 +144,12 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = European))
 
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(prevalence_by_barri_sex %>% filter(Sex == "Home"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = Latino))
 
 # Barris that will need to be put together
 bcn %>% 
