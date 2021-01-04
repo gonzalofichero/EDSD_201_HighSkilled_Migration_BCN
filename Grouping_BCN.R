@@ -14,6 +14,7 @@ glimpse(bcn)
 bcn %>% 
   mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn
 
+
 ####################################################################
 # Population of Barcelona by Barri
 
@@ -171,8 +172,8 @@ bcn %>%
   
 
 ###############################################
-# Foreigners in BCN (2018) = social capital
-foreign <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2018_domicilis_nacionalitat_espanyola_estrangera.csv")
+# Foreigners in BCN (2015) = social capital
+foreign <- read_csv("02 - Data/2015_domicilis_nacionalitat_espanyola_estrangera.csv")
 
 
 glimpse(foreign)
@@ -192,6 +193,7 @@ foreign %>%
 
 ###############################################
 # Lugares de Culto BCN = social capital?
+# DISCONTINUED! (better work for non-university degree)
 
 cult <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/LLOCS_CULTE.csv")
 
@@ -209,7 +211,7 @@ cult %>%
 ##########################################
 # $$$ = economic capital
 
-money <- read_csv("02 - Data/2017_rendatributariamitjanaperpersona.csv")
+money <- read_csv("02 - Data/2015_rendatributariamitjanaperpersona.csv")
 
 money %>% 
   group_by(Codi_Barri, Seccio_Censal) %>% 
@@ -246,7 +248,7 @@ bars %>%
 ####################################
 # Median Age of Buildings = control
 
-age_build <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2018_loc_hab_edat_mitjana.csv")
+age_build <- read_csv("02 - Data/2018_loc_hab_edat_mitjana.csv")
 
 
 age_build %>% 
@@ -260,23 +262,51 @@ age_build %>%
 
 
 ####################################
-# Size (renting?) flats = control
+# Size group flats = control
 
-size_flat <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2018_loc_hab_sup.csv")
+size_flat_group <- read_csv("02 - Data/2018_loc_hab_sup.csv")
 
 
-size_flat %>% 
+size_flat_group %>% 
   select(Nom_districte, Nom_barri, Desc_sup, Nombre) %>%
   mutate(size = case_when(Desc_sup %in% c("Fins a 30 m2", "31- 60 m2") ~"01 S (Up to 60m2)",
                           Desc_sup %in% c("61- 90 m2", "91- 120 m2") ~"02 M (60 to 120m2)",
                           Desc_sup %in% c("121- 150 m2", "151- 210 m2") ~"03 L (120 to 210m2)",
-                          Desc_sup %in% c("211- 250 m2", "M?s de 250 m2") ~"04 XL (m?s 210m2)",
+                          Desc_sup %in% c("211- 250 m2", "Més de 250 m2") ~"04 XL (més 210m2)",
                           TRUE ~ "CHECK"
                           )) %>% 
   select(Nom_districte, Nom_barri, size, Nombre) %>%
   group_by(Nom_districte, Nom_barri, size) %>% 
   summarize(N = sum(Nombre)) %>% 
   pivot_wider(names_from = size, values_from = N) 
+
+
+####################################
+# Median size flats = control
+
+size_flat_median <- read_csv("02 - Data/2017_sup_mitjana_habitatge.csv")
+
+
+size_flat_median %>%
+  rename(median_size_flat = `Superficie_mitjana_habitatge_(m2)`) %>% 
+  select(Codi_barri, Nom_barri, median_size_flat) %>%
+  mutate(Codi_barri = as.factor(str_pad(Codi_barri, width=2, side="left", pad="0"))) %>% 
+  rename(BARRI = Codi_barri) -> size_flat_median 
+
+
+####################################
+# M2 size of each Barcelona Barri
+
+size_barri <- read_csv("02 - Data/2015_superficie.csv")
+
+
+size_barri %>%
+  rename(size_barri_ha = `Superfície (ha)`) %>% 
+  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0")),
+         size_barri_m2 = size_barri_ha * 10000) %>%
+  select(Codi_Barri, Nom_Barri, size_barri_m2) %>%
+  rename(BARRI = Codi_Barri) -> size_barri 
+
 
 
 #####################################################
