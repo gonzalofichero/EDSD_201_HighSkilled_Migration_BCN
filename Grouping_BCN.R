@@ -294,6 +294,7 @@ size_flat_median %>%
   rename(BARRI = Codi_barri) -> size_flat_median 
 
 
+
 ####################################
 # Size of space by usage = control
 
@@ -463,7 +464,7 @@ bcn_map %>%
 ######################################
 # Population Structure per Barri
 
-demo_struc_barri <- read_csv("02 - Data/2018_ine_edat_any_a_any_per_sexe.csv")
+demo_struc_barri <- read_csv("02 - Data/2015_ine_edat_any_a_any_per_sexe.csv")
 
 # This is the Sex-Age structure per barri, wihtout kids (since they cannot have University degrees)
 demo_struc_barri_2 <- demo_struc_barri %>%
@@ -525,8 +526,6 @@ bcn_map %>%
 
 
 
-
-
 ######################################
 # Unitary Households by Barrio 2015
 
@@ -552,9 +551,40 @@ bcn_map %>%
   geom_sf(aes(fill = perc_domi_uni))
 
 
+###############################################################
+# Unitary Households by Barrio 2015 for specific age group
 
-# Source:
-# https://www.bcn.cat/estadistica/castella/dades/inf/llars/a2018/t102.htm
+uni_house_age <- read_csv("02 - Data/2015_padro_viu_sola_edat_quinquennal.csv")
+
+
+demo_struc_barri %>%
+  rename(BARRI = Codi_Barri,
+         Age = `Edat a`) %>%
+  filter(Age >=25, Age < 40) %>%
+  group_by(BARRI) %>% 
+  summarize(pop_25_40 = sum(Nombre, na.rm = T)) %>% 
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> pop_25_40
+  
+
+uni_house_age <- uni_house_age %>%
+  filter(Edat_quinquennal %in% c("25-29 anys", "30-34 anys", "35-39 anys")) %>%
+  rename(BARRI = Codi_Barri,
+         uni_houses = Nombre) %>%
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) %>%
+  group_by(BARRI) %>% 
+  summarize(uni_house_25_40 = sum(uni_houses, na.rm = T)) %>% 
+  left_join(pop_25_40, by="BARRI") %>%
+  mutate(perc_domi_uni_25_40 = uni_house_25_40 / pop_25_40)
+
+
+# % Unipersonal Households by Barri
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(uni_house_age, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_domi_uni_25_40))
+
+
 
 
 ######################################
