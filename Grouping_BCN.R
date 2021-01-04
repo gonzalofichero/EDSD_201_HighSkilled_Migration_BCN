@@ -295,6 +295,21 @@ size_flat_median %>%
 
 
 ####################################
+# Size of space by usage = control
+
+size_local_usage <- read_csv("02 - Data/2015_loc_sup.csv")
+
+
+size_local_usage %>%
+  select(Codi_Barri, Nom_Barri, Us_del_local, Superficie_m2) %>%
+  pivot_wider(names_from = Us_del_local, values_from = Superficie_m2) %>% 
+  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>%
+  filter(Codi_Barri != '99') %>% 
+  rename(BARRI = Codi_Barri) -> size_local_usage
+
+
+
+####################################
 # M2 size of each Barcelona Barri
 
 size_barri <- read_csv("02 - Data/2015_superficie.csv")
@@ -513,21 +528,26 @@ bcn_map %>%
 
 
 ######################################
-# Unitary Households by Barrio 2018
+# Unitary Households by Barrio 2015
 
-uni_house <- read_csv("02 - Data/2018_Hog_Unipersonal.csv")
+uni_house <- read_csv("02 - Data/2015_domicilis_nombre_persones.csv")
 
 
-uni_house_pop <- uni_house %>% 
+uni_house <- uni_house %>%
+                  filter(Persones == '1 persona') %>% 
+                  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>%
+                  rename(BARRI = Codi_Barri,
+                         uni_houses = Nombre) %>% 
+                  select(BARRI, uni_houses) %>% 
                   left_join(pop_bcn, by="BARRI") %>%
-                  mutate(perc_domi_uni = Total / Domicilis)
+                  mutate(perc_domi_uni = uni_houses / Domicilis)
                   
 
 
 # % Unipersonal Households by Barri
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
-  left_join(uni_house_pop, by = "BARRI") %>%
+  left_join(uni_house, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_domi_uni))
 
