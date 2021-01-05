@@ -643,6 +643,46 @@ bcn_map %>%
   geom_sf(aes(fill = Cinemas))
 
 
+##########################################
+# Changes of residence per thousand, 2015
+
+int_migration <- read_csv("02 - Data/2015_taxa_migracio_interna.csv")
+
+
+int_migration %>%
+  mutate(Codi_barri = as.factor(str_pad(Codi_barri, width=2, side="left", pad="0"))) %>%
+  rename(BARRI = Codi_barri) %>% 
+  group_by(BARRI) %>% 
+  summarize(mean_int_migration = mean(Nombre, na.rm = T)) -> int_migration
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(int_migration, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = mean_int_migration))
+
+
+
+###############################################
+# New migrants per Barri per 1000 people, 2015
+
+mig_hotspot <- read_csv("02 - Data/2015_taxa_immigracio.csv")
+
+
+mig_hotspot %>%
+  mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>%
+  rename(BARRI = Codi_Barri,
+         new_migrants = Taxa_mil_hab) %>% 
+  select(BARRI, new_migrants) -> mig_hotspot
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(mig_hotspot, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = new_migrants))
+
 
 ##############################
 # MAPPING
