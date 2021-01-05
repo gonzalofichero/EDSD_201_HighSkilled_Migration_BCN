@@ -231,18 +231,29 @@ bcn_map %>%
 #########################################
 # Bars per Barrio = cultural capital
 
-bars <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/2019_1s_data_set_opendata_terrasses.csv")
+bars <- read_csv("02 - Data/2019_1s_data_set_opendata_terrasses.csv")
 
 
 bars %>% 
+  filter(!is.na(CODI_BARRI)) %>% 
   select(NOM_DISTRICTE, CODI_BARRI, NOM_BARRI, TAULES) %>%
   group_by(NOM_DISTRICTE, CODI_BARRI, NOM_BARRI) %>% 
-  summarize(mesas = sum(TAULES)) %>% 
+  summarize(mesas = sum(TAULES, na.rm = T),
+            bars = n()) %>%
   ungroup() %>% 
-  select(CODI_BARRI, mesas) %>% 
   mutate(CODI_BARRI = as.factor(str_pad(CODI_BARRI, width=2, side="left", pad="0"))) %>% 
-  rename(BARRI = CODI_BARRI) -> bares_map
+  rename(BARRI = CODI_BARRI) %>% 
+  left_join(pop_25_40, by = "BARRI") %>% 
+  mutate(tables_pop = mesas / pop_25_40,
+         bars_pop = bars / pop_25_40) %>% 
+  select(BARRI, mesas, bars, tables_pop, bars_pop) -> bares_map
 
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(bares_map, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = bars_pop))
 
 
 ####################################
@@ -592,11 +603,44 @@ bcn_map %>%
 
 # It's and RDF file, so need tutorial to read from web:
 # https://cran.r-project.org/web/packages/rdflib/vignettes/rdf_intro.html
+library(rdflib)
+library(jsonld)
+library(rvest)
+library(magrittr)
+
+url_cultural <- "http://www.bcn.cat/tercerlloc/cultura.rdf"
+
+culture <- read_html(url_cultural, as.data.frame=T, stringsAsFactors = TRUE, encoding = "utf8")
+
 
 
 # Source:
 # http://www.bcn.cat/tercerlloc/cultura.rdf
 
+
+
+######################################
+# Cultural spaces, 2020 data
+
+culture <- read_csv("02 - Data/C002_Cinemes_teatres_auditoris.csv")
+
+
+culture %>%
+  group_by(CODI_EQUIPAMENT, SECCIO, CODI_BARRI) %>%
+  filter(`3ER_NIVELL` != "Auditoris", `3ER_NIVELL` != "Cinemes, teatres, auditoris") %>%
+  mutate(type_culture = case_when(`3ER_NIVELL` == "Teatres" ~ "Teatres",
+                                  TRUE ~ "Cinemas")) %>%
+  group_by(CODI_BARRI, type_culture) %>% 
+  summarize(qty_culture = n()) %>% 
+  pivot_wider(names_from = type_culture, values_from = qty_culture) %>% 
+  rename(BARRI = CODI_BARRI) -> culture_map
+  
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(culture_map, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = Cinemas))
 
 
 
