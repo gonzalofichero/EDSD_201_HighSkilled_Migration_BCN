@@ -143,7 +143,7 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(prevalence_by_barri, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = European))
+  geom_sf(aes(fill = Latino))
 
 
 bcn_map %>% 
@@ -641,6 +641,32 @@ bcn_map %>%
   left_join(culture_map, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = Cinemas))
+
+
+
+######################################
+# Average rent per Barri, 2015
+
+rent <- read_csv("02 - Data/2015_lloguer_preu_trim.csv")
+
+
+rent %>%
+  #filter(Lloguer_mitja == "Lloguer mitjà mensual (Euros/mes)") %>% 
+  filter(Lloguer_mitja == "Lloguer mitjà per superfície (Euros/m2 mes)") %>% 
+  select(Codi_Barri, Nom_Barri, Trimestre, Preu) %>%
+  group_by(Codi_Barri, Nom_Barri) %>% 
+  summarize(avg_rent_2015 = mean(Preu, na.rm = T)) %>% 
+  ungroup() %>%
+  rename(BARRI = Codi_Barri) %>% 
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) %>% 
+  select(BARRI, avg_rent_2015) -> rent
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(rent, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = avg_rent_2015))
 
 
 ##########################################
