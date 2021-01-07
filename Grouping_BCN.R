@@ -721,6 +721,46 @@ bcn_map %>%
   geom_sf(aes(fill = new_migrants))
 
 
+
+###############################################
+# Since when in Padrón per Barri, 2016
+
+yearsold_padro <- read_csv("02 - Data/2016_padro_alta_padro.csv")
+
+
+yearsold_padro %>%
+  rename(BARRI = Codi_Barri,
+         old = `Any d'alta al padró`) %>%
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) %>% 
+  filter(old != "No consta") %>% 
+  group_by(BARRI, old) %>% 
+  summarize(total_old = sum(Nombre, na.rm = T)) %>% 
+  slice(which.max(total_old)) -> yearsold_padro_map
+
+
+yearsold_padro %>%
+  rename(BARRI = Codi_Barri,
+         old = `Any d'alta al padró`) %>%
+  filter(old != "No consta") %>%
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0")),
+         old_v2 = case_when(old == "Menys d'1 any" ~ 0.5,
+                            old == "D'1 a 5 anys" ~ 3,
+                            old == "De 6 a 15 anys" ~ 12,
+                            old == "Més de 15 anys" ~ 45,
+                            TRUE ~ 0)) %>%
+  group_by(BARRI) %>% 
+  mutate(total_old = (old_v2 * Nombre) / sum(Nombre)) %>%
+  #group_by(BARRI) %>% 
+  summarize(sum_old = sum(total_old)) -> sumyears_padro_map
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(sumyears_padro_map, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = sum_old))
+
+
 ##############################
 # MAPPING
 library(ggplot2)
