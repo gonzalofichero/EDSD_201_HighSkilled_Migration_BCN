@@ -449,14 +449,15 @@ bcn_map %>%
 ######################################
 # Nivel educativo por Barri
 
-educ_barri <- read_csv("02 - Data/2018_padro_nivell_academic.csv")
+educ_barri <- read_csv("02 - Data/2015_padro_nivell_academic.csv")
 
 educ_barri_2 <- educ_barri %>%
                 mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>% 
                 group_by(Codi_Barri, Nivell_academic) %>%
-                summarize(total_educ = sum(Nombre)) %>%
+                summarize(real_uni_barri = sum(Nombre)) %>%
                 filter(Nivell_academic == "Estudis universitaris / CFGS grau superior") %>% 
-                rename(BARRI = Codi_Barri)
+                rename(BARRI = Codi_Barri) %>% 
+                select(BARRI, real_uni_barri)
 
 educ_barri_pop <- educ_barri_2 %>% 
                   left_join(pop_bcn, by="BARRI") %>%
@@ -470,6 +471,7 @@ bcn_map %>%
   left_join(educ_barri_pop, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_educ_superior))
+
 
 
 ######################################
@@ -490,7 +492,8 @@ demo_struc_barri_2 <- demo_struc_barri %>%
                         group_by(Codi_Barri, Sexe, edat_group) %>%
                         summarize(total_edat = sum(Nombre)) %>%
                         ungroup() %>%  
-                        rename(BARRI = Codi_Barri)
+                        rename(BARRI = Codi_Barri) %>% 
+
 
 # Creating intermediate tables to calculate % by Age Group for each Sex and Barri, and % by Sex for each Barri
 demo_struc_barri_tot_sexe <- demo_struc_barri_2 %>% 
@@ -504,7 +507,7 @@ demo_struc_barri_tot_barri <- demo_struc_barri_2 %>%
 
 demo_struc_barri_3 <- demo_struc_barri_2 %>% 
   left_join(demo_struc_barri_tot_sexe, by=c("BARRI","Sexe")) %>%
-  mutate(perc_edat = total_edat / total_group_sexe) %>%
+  #mutate(perc_edat = total_edat / total_group_sexe) %>%
   # Expected % University degree by Sex and Age group, based on Encuesta Sociodemográfica de Barcelona
   mutate(standard = case_when(Sexe == "Dona" & edat_group == "02 - 15 a 24 anys" ~ 0.118625456,
                               Sexe == "Dona" & edat_group == "03 - 25 a 39 anys" ~ 0.568616795,
@@ -516,21 +519,27 @@ demo_struc_barri_3 <- demo_struc_barri_2 %>%
                               Sexe == "Home" & edat_group == "04 - 40 a 64 anys" ~ 0.338336146,
                               Sexe == "Home" & edat_group == "05 - 65 i mes" ~ 0.241529018
                               )) %>% 
-  left_join(demo_struc_barri_tot_barri, by=c("BARRI")) %>%
+  #left_join(demo_struc_barri_tot_barri, by=c("BARRI")) %>%
   # Adding % of Sex by Barri and calculating weights
-  mutate(perc_sexe = total_group_sexe / total_group_barri,
-         uni_per_structure = perc_edat * perc_sexe * standard) %>%
+  mutate(expected_uni = total_edat * standard) %>% 
+  #mutate(perc_sexe = total_group_sexe / total_group_barri,
+  #       uni_per_structure = perc_edat * perc_sexe * standard) %>%
   group_by(BARRI) %>% 
   # When summing up, got the expected % University degree by Barri
-  summarize(perc_university = sum(uni_per_structure))
-  
+  summarize(expected_uni_barri = sum(expected_uni)) %>% 
+  select(BARRI, expected_uni_barri)
+
+
+demo_struc_barri_3 %>% left_join(educ_barri_2, by = "BARRI") %>% 
+  mutate(excess_uni = real_uni_barri / expected_uni_barri) -> excess_university_pop
+
 
 # Plotting
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
-  left_join(demo_struc_barri_3, by = "BARRI") %>%
+  left_join(excess_university_pop, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = perc_university))
+  geom_sf(aes(fill = excess_uni))
 
 
 
@@ -560,6 +569,7 @@ bcn_map %>%
   left_join(uni_house, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_domi_uni))
+
 
 
 ###############################################################
@@ -600,6 +610,7 @@ bcn_map %>%
 
 ######################################
 # Cultural stuff in BCN with Geo
+# DEPRECATED
 
 # It's and RDF file, so need tutorial to read from web:
 # https://cran.r-project.org/web/packages/rdflib/vignettes/rdf_intro.html
