@@ -111,6 +111,31 @@ bcn %>%
   mutate(prevalence = European - Latino) -> prevalence_by_barri
 
 
+# Creating map for relative inmigration by national group
+bcn %>% 
+  filter(nation == "European" | nation == "Latino") %>% 
+  group_by(nation) %>% 
+  summarise(total_nat = sum(Casos, na.rm = T)) -> national
+
+bcn %>% 
+  filter(nation == "European" | nation == "Latino") %>% 
+  group_by(BARRI, NOM, nation) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>%
+  left_join(national, by = "nation") %>% 
+  mutate(perc_pop = total / total_nat) -> relative_nation_map
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_nation_map %>% filter(nation == "European"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  guides(fill=guide_legend(title="% European inmigrants"))
+
+
+
+
+
 # Check 2, by sex:
 bcn %>% 
   filter(nation == "European" | nation == "Latino") %>% 
