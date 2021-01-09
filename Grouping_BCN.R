@@ -48,9 +48,9 @@ bcn %>%
 
 # Top 10 Barrios for Women
 bcn %>%   
-  group_by(Barrio, Sex) %>% 
+  group_by(NOM, Sex) %>% 
   summarize(N = sum(Casos))  %>%
-  group_by(Barrio) %>% 
+  group_by(NOM) %>% 
   mutate(dist_barrio = N / sum(N)) %>%
   select(-N) %>% 
   pivot_wider(names_from = Sex, values_from = dist_barrio) %>% 
@@ -105,7 +105,7 @@ bcn %>%
 # Check:
 bcn %>% 
   filter(nation == "European" | nation == "Latino") %>% 
-  group_by(BARRI, NOM, nation) %>% 
+  group_by(BARRI, NOM, Sex, nation) %>% 
   summarize(total = sum(Casos, na.rm = T)) %>% 
   pivot_wider(names_from = nation, values_from = total) %>% 
   mutate(prevalence = European - Latino) -> prevalence_by_barri
@@ -127,11 +127,33 @@ bcn %>%
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
-  left_join(relative_nation_map %>% filter(nation == "European"), by = "BARRI") %>%
+  left_join(relative_nation_map %>% filter(nation == "Latino"), by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
-  guides(fill=guide_legend(title="% European inmigrants"))
+  guides(fill=guide_legend(title="% Latino inmigrants"))
 
+
+
+# Creating map for relative inmigration by sex group
+bcn %>% 
+  filter(nation == "European") %>% 
+  group_by(Sex) %>% 
+  summarise(total_nat = sum(Casos, na.rm = T)) -> sex
+
+bcn %>% 
+  filter(nation == "European") %>% 
+  group_by(BARRI, NOM, Sex) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>%
+  left_join(sex, by = "Sex") %>% 
+  mutate(perc_pop = total / total_nat) -> relative_sex_map
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_sex_map %>% filter(Sex == "Dona"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  guides(fill=guide_legend(title="% European Women inmigrants"))
 
 
 
@@ -146,7 +168,8 @@ bcn %>%
 
 # Top Barris per origin
 prevalence_by_barri %>%
-  arrange(desc(Latino))
+  filter(Sex == "Dona") %>% 
+  arrange(desc(Latino)) %>% View()
 
 
 # Europeans:
