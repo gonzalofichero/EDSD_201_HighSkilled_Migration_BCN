@@ -26,6 +26,64 @@ pop_bcn <- pop_bcn %>%
   rename(BARRI = Codi_Barri)
 
 
+####################################################################
+# Population of Barcelona by Barri and Born Origin
+library(readxl)
+
+origin_bcn <- read_excel("02 - Data/PC_2016.xlsx", sheet = "Datos")
+glimpse(origin_bcn)
+
+origin_bcn_2 <- origin_bcn %>%
+  mutate(nation = case_when(BORN %in% c('AUSTRIA','BELGICA','BULGARIA','CHIPRE','DINAMARCA','FINLANDIA',
+                                          'FRANCIA','GRECIA','HUNGRIA','IRLANDA','ITALIA','LUXEMBURGO','MALTA',
+                                          'PAISES BAJOS','POLONIA','PORTUGAL','REINO UNIDO','ALEMANIA',
+                                          'RUMANIA','SUECIA','LETONIA','ESTONIA','LITUANIA','REPUBLICA CHECA',
+                                           'REPUBLICA ESLOVACA','ESLOVENIA') ~ "European",
+                            BORN %in% c('MEXICO','COSTA RICA','CUBA','EL SALVADOR','GUATEMALA','HONDURAS',
+                                        'NICARAGUA','PANAMA','REPUBLICA DOMINICANA','ARGENTINA','BOLIVIA',
+                                        'BRASIL','COLOMBIA','CHILE','ECUADOR','PARAGUAY','PERU','URUGUAY',
+                                        'VENEZUELA') ~ "Latino",
+                            BORN == "ESPAÑA" ~ "Spanish",
+                            TRUE ~ "Otros")) %>% 
+  select(Barrio, nation, Total) %>%
+  group_by(Barrio, nation) %>%
+  summarize(stock_nation = sum(Total, na.rm = T)) %>% 
+  ungroup() %>% 
+  #mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>% 
+  rename(BARRI = Barrio)
+
+total_origin_bcn <- origin_bcn_2 %>% 
+                      group_by(nation) %>% 
+                      summarize(total_stock_nation = sum(stock_nation))
+
+origin_bcn_3 <- origin_bcn_2 %>% left_join(total_origin_bcn, by = "nation") %>% 
+                  mutate(perc_stock_origin = stock_nation / total_stock_nation) %>% 
+                  select(BARRI, nation, perc_stock_origin) %>% 
+                  pivot_wider(names_from = nation, values_from = perc_stock_origin)
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(origin_bcn_3, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = Latino)) +
+  guides(fill=guide_legend(title="% stock Latino 2016"))
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(origin_bcn_3, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = `Español`)) +
+  guides(fill=guide_legend(title="% stock Spaniards 2016"))
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(origin_bcn_3, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = European)) +
+  guides(fill=guide_legend(title="% stock European 2016"))
+
+
 #####################################################
 # Quick tables
 
