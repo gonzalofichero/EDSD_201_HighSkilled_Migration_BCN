@@ -73,7 +73,7 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = `Español`)) +
+  geom_sf(aes(fill = Spanish)) +
   guides(fill=guide_legend(title="% stock Spaniards 2016"))
 
 bcn_map %>% 
