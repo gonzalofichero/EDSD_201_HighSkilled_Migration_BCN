@@ -938,4 +938,20 @@ write_csv(centroid, "02 - Data/centroids.csv")
 # Yes, it's not automatic but for a 1st try is not that bad...
 
 
+# Loading the results of the search
+flickr <- read_delim("02 - Data/2020_Flickr.csv", delim = ";")
+
+
+flickr %>%
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) %>%
+  rename(flickr_qty = Flickr_search) %>% 
+  select(BARRI, flickr_qty) -> flickr
+
+
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(flickr, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = flickr_qty))
+
 
