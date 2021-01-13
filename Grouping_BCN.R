@@ -943,15 +943,16 @@ flickr <- read_delim("02 - Data/2020_Flickr.csv", delim = ";")
 
 
 flickr %>%
-  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) %>%
+  mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0")),
+         symbolic_index = round(Flickr_search/max(Flickr_search, na.rm = T),2)) %>%
   rename(flickr_qty = Flickr_search) %>% 
-  select(BARRI, flickr_qty) -> flickr
+  select(BARRI, symbolic_index) -> flickr
 
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(flickr, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = flickr_qty))
+  geom_sf(aes(fill = symbolic_index))
 
 
