@@ -917,3 +917,25 @@ bcn_map3 %>%
 
 # Secret:
 # 6a46788cb1238ad5
+
+
+# Calculate centroids of each neighborhood with:
+centroid <- st_transform(bcn_map2, 29101) %>% 
+  st_centroid() %>% 
+  # this is the crs from d, which has no EPSG code:
+  st_transform(., '+proj=longlat +ellps=GRS80 +no_defs') %>% 
+  select(BARRI, NOM, geometry)
+
+write_csv(centroid, "02 - Data/centroids.csv")
+
+# Generate template Flickr search with:
+# https://www.flickr.com/search/?tags=barcelona&view_all=1&media=photos&min_taken_date=1420066800&max_taken_date=1451689199&?lat=41.379779&lon=2.173565&radius=0.25&has_geo=1&view_all=1
+
+# Search for each BARRI the QTY of photos
+# Try different radius: 0.25, 0.5 (I imagine its in miles...)
+
+# Create xls with QTY photos for each BARRI for different radius, and compare
+# Yes, it's not automatic but for a 1st try is not that bad...
+
+
+
