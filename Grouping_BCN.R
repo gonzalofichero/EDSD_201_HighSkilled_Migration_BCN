@@ -1,22 +1,23 @@
-# Importing libraries
+
+####  Importing libraries  #### 
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(sf)
 library(colorspace)
 
-# Loading data
+#### Loading data  ####
 bcn <- read.csv("02 - Data/Datos_inmi_BCN.csv", sep = ";", header = T, encoding = "UTF-8")
 
 glimpse(bcn)
 
-# Convert Barri code to factor
+####  Convert Barri code to factor  #### 
 bcn %>% 
   mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn
 
 
-####################################################################
-# Population of Barcelona by Barri
+####  Population of Barcelona by Barri  ####
+# 
 
 pop_bcn <- read_csv("02 - Data/2018_padro_ocupacio_mitjana.csv")
 
@@ -26,8 +27,8 @@ pop_bcn <- pop_bcn %>%
   rename(BARRI = Codi_Barri)
 
 
-####################################################################
-# Population of Barcelona by Barri and Born Origin
+####  Population of Barcelona by Barri and Born Origin  ####
+# 
 library(readxl)
 
 origin_bcn <- read_excel("02 - Data/PC_2016.xlsx", sheet = "Datos")
@@ -84,10 +85,10 @@ bcn_map %>%
   guides(fill=guide_legend(title="% stock European 2016"))
 
 
-#####################################################
-# Quick tables
+####  Quick tables ####
+# 
 
-# 1. Less than 100 movements per Barrio
+##### 1. Less than 100 movements per Barrio  ####
 bcn %>% 
   group_by(Barrio) %>% 
   summarize(N = sum(Casos)) %>% 
@@ -147,7 +148,7 @@ bcn %>%
 
 
 
-# 2. Histogram of Nationalities to find the correct group by
+##### 2. Histogram of Nationalities to find the correct group by  ####
 bcn %>% 
   filter(Origin == "Ext") %>% 
   group_by(Birth_Country) %>% 
@@ -277,8 +278,8 @@ bcn %>%
 
   
 
-###############################################
-# Foreigners in BCN (2015) = social capital
+####  Foreigners in BCN (2015) = social capital  ####
+# 
 foreign <- read_csv("02 - Data/2015_domicilis_nacionalitat_espanyola_estrangera.csv")
 
 
@@ -297,8 +298,9 @@ foreign %>%
   rename(BARRI = Codi_Barri) -> extranjeros_map
 
 
-###############################################
-# Lugares de Culto BCN = social capital?
+
+####  Lugares de Culto BCN = social capital?  ####
+# 
 # DISCONTINUED! (better work for non-university degree)
 
 cult <- read_csv("C:/Users/Gonzalo/Desktop/EDSD/05 - Thesis/02 - Data/LLOCS_CULTE.csv")
@@ -314,8 +316,8 @@ cult %>%
 
 
 
-##########################################
-# $$$ = economic capital
+####  $$$ = economic capital  ####
+# 
 
 money <- read_csv("02 - Data/2015_rendatributariamitjanaperpersona.csv")
 
@@ -334,8 +336,8 @@ bcn_map %>%
   geom_sf(aes(fill = income))
 
 
-#########################################
-# Bars per Barrio = cultural capital
+####  Bars per Barrio = cultural capital  ####
+# 
 
 bars <- read_csv("02 - Data/2019_1s_data_set_opendata_terrasses.csv")
 
@@ -362,8 +364,9 @@ bcn_map %>%
   geom_sf(aes(fill = bars_pop))
 
 
-####################################
-# Median Age of Buildings = control
+
+####  Median Age of Buildings = control  ####
+# 
 
 age_build <- read_csv("02 - Data/2018_loc_hab_edat_mitjana.csv")
 
@@ -378,8 +381,9 @@ age_build %>%
   rename(BARRI = Codi_barri) -> flat_age_map
 
 
-####################################
-# Size group flats = control
+
+####  Size group flats = control  ####
+# 
 
 size_flat_group <- read_csv("02 - Data/2018_loc_hab_sup.csv")
 
@@ -398,8 +402,8 @@ size_flat_group %>%
   pivot_wider(names_from = size, values_from = N) 
 
 
-####################################
-# Median size flats = control
+####  Median size flats = control  ####
+# 
 
 size_flat_median <- read_csv("02 - Data/2017_sup_mitjana_habitatge.csv")
 
@@ -412,8 +416,8 @@ size_flat_median %>%
 
 
 
-####################################
-# Size of space by usage = control
+####  Size of space by usage = control  ####
+# 
 
 size_local_usage <- read_csv("02 - Data/2015_loc_sup.csv")
 
@@ -427,8 +431,8 @@ size_local_usage %>%
 
 
 
-####################################
-# M2 size of each Barcelona Barri
+####  M2 size of each Barcelona Barri  ####
+# 
 
 size_barri <- read_csv("02 - Data/2015_superficie.csv")
 
@@ -442,8 +446,8 @@ size_barri %>%
 
 
 
-#####################################################
-# Dynamic stock of net migration by nationality
+####  Dynamic stock of net migration by nationality  #####
+# 
 
 inm_nac <- read_csv("02 - Data/Time Series Ethnic change/2018_immigrants_nacionalitats.csv")
 emi_nac <- read_csv("02 - Data/Time Series Ethnic change/2018_emigrants_nacionalitats.csv")
@@ -484,8 +488,8 @@ bcn_map %>%
 
 
   
-#######################################
-# Voters (left vs right) from BCN web
+####  Voters (left vs right) from BCN web  #####
+#
 
 # Tutorial:
 # http://blog-r.es/data-extraction/web-scraping-of-tables-in-r/
@@ -552,8 +556,8 @@ bcn_map %>%
 # https://www.bcn.cat/estadistica/catala/dades/barris/telec/loc/a2015.htm
 
 
-######################################
-# Nivel educativo por Barri
+####  Nivel educativo por Barri  #####
+# 
 
 educ_barri <- read_csv("02 - Data/2015_padro_nivell_academic.csv")
 
@@ -580,8 +584,8 @@ bcn_map %>%
 
 
 
-######################################
-# Population Structure per Barri
+####  Population Structure per Barri  ####
+#
 
 demo_struc_barri <- read_csv("02 - Data/2015_ine_edat_any_a_any_per_sexe.csv")
 
@@ -652,8 +656,8 @@ bcn_map %>%
 
 
 
-######################################
-# Unitary Households by Barrio 2015
+####  Unitary Households by Barrio 2015 #####
+# 
 
 uni_house <- read_csv("02 - Data/2015_domicilis_nombre_persones.csv")
 
@@ -678,8 +682,8 @@ bcn_map %>%
 
 
 
-###############################################################
-# Unitary Households by Barrio 2015 for specific age group
+####  Unitary Households by Barrio 2015 for specific age group  #####
+# 
 
 uni_house_age <- read_csv("02 - Data/2015_padro_viu_sola_edat_quinquennal.csv")
 
@@ -714,8 +718,8 @@ bcn_map %>%
 
 
 
-######################################
-# Cultural stuff in BCN with Geo
+####  Cultural stuff in BCN with Geo  #######
+# 
 # DEPRECATED
 
 # It's and RDF file, so need tutorial to read from web:
@@ -736,8 +740,8 @@ culture <- read_html(url_cultural, as.data.frame=T, stringsAsFactors = TRUE, enc
 
 
 
-######################################
-# Cultural spaces, 2020 data
+###  Cultural spaces, 2020 data  ########
+# 
 
 culture <- read_csv("02 - Data/C002_Cinemes_teatres_auditoris.csv")
 
@@ -761,8 +765,8 @@ bcn_map %>%
 
 
 
-######################################
-# Average rent per Barri, 2015
+####  Average rent per Barri, 2015  ######
+# 
 
 rent <- read_csv("02 - Data/2015_lloguer_preu_trim.csv")
 
@@ -786,8 +790,9 @@ bcn_map %>%
   geom_sf(aes(fill = avg_rent_2015))
 
 
-##########################################
-# Changes of residence per thousand, 2015
+
+####  Changes of residence per thousand, 2015  #########
+# 
 
 int_migration <- read_csv("02 - Data/2015_taxa_migracio_interna.csv")
 
@@ -807,8 +812,8 @@ bcn_map %>%
 
 
 
-###############################################
-# New migrants per Barri per 1000 people, 2015
+####  New migrants per Barri per 1000 people, 2015  ########
+# 
 
 mig_hotspot <- read_csv("02 - Data/2015_taxa_immigracio.csv")
 
@@ -828,8 +833,8 @@ bcn_map %>%
 
 
 
-###############################################
-# Since when in Padrón per Barri, 2016
+####  Since when in Padrón per Barri, 2016  #############
+# 
 
 yearsold_padro <- read_csv("02 - Data/2016_padro_alta_padro.csv")
 
@@ -867,8 +872,9 @@ bcn_map %>%
   geom_sf(aes(fill = sum_old))
 
 
-##############################
-# MAPPING
+
+####  MAPPING  ########
+# 
 library(ggplot2)
 library(sf)
 library(colorspace)
@@ -908,8 +914,8 @@ bcn_map3 %>%
 
 
 
-######################################
-# FLICKR data
+#### FLICKR data ##########
+# 
 # Academic Research: High Skilled Migration in Barcelona
 
 # Key:
@@ -954,5 +960,9 @@ bcn_map %>%
   left_join(flickr, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = symbolic_index))
+
+
+
+#### Pulling everything together... #########
 
 
