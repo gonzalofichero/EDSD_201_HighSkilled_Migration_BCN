@@ -991,12 +991,12 @@ bcn_full <- bcn %>%
                      Latino_stock = Latino.y,
                      European_stock = European.y,
                      Others_cty_stock = Otros,
-                     Spanish_stock = Spanish)
-              
+                     Spanish_stock = Spanish) %>% 
+              mutate_if(is.numeric, ~replace_na(., 0))
               
 # Exporting full data set to start onward from this point
 
 write_csv(bcn_full, "bcn_full_dataset.csv")
-              
+
 
 
