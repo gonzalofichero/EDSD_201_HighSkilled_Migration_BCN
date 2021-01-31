@@ -322,7 +322,7 @@ cult %>%
 money <- read_csv("02 - Data/2015_rendatributariamitjanaperpersona.csv")
 
 money %>% 
-  group_by(Codi_Barri, Seccio_Censal) %>% 
+  group_by(Codi_Barri) %>% 
   summarize(income = mean(Import_Euros)) %>%
   ungroup() %>% 
   mutate(Codi_Barri = as.factor(str_pad(Codi_Barri, width=2, side="left", pad="0"))) %>%
@@ -964,5 +964,39 @@ bcn_map %>%
 
 
 #### Pulling everything together... #########
+
+bcn_full <- bcn %>% 
+              filter(nation == "European" | nation == "Latino") %>% 
+              group_by(BARRI, NOM, nation) %>% 
+              summarize(total = sum(Casos, na.rm = T)) %>% 
+              pivot_wider(names_from = nation, values_from = total) %>% 
+              
+              left_join(pop_bcn, by = "BARRI") %>% 
+              left_join(money_v2, by = "BARRI") %>% 
+              left_join(bares_map %>% select(BARRI, mesas, bars), by = "BARRI") %>% 
+              left_join(flat_age_map, by = "BARRI") %>% 
+              left_join(size_flat_median %>% select(BARRI, median_size_flat), by = "BARRI") %>% 
+              left_join(size_barri %>% select(BARRI, size_barri_m2), by = "BARRI") %>% 
+              left_join(votes %>% select(BARRI, perc_left, perc_indep), by = "BARRI") %>% 
+              left_join(excess_university_pop %>% select(BARRI, excess_uni), by = "BARRI") %>% 
+              left_join(uni_house_age %>% select(BARRI, perc_domi_uni_25_40), by = "BARRI") %>% 
+              left_join(culture_map, by = "BARRI") %>% 
+              left_join(rent, by = "BARRI") %>% 
+              left_join(sumyears_padro_map, by = "BARRI") %>% 
+              left_join(int_migration, by = "BARRI") %>% 
+              left_join(flickr, by = "BARRI") %>% 
+              left_join(origin_bcn_3, by = "BARRI") %>% 
+              rename(Latino_incoming = Latino.x,
+                     European_incoming = European.x,
+                     Latino_stock = Latino.y,
+                     European_stock = European.y,
+                     Others_cty_stock = Otros,
+                     Spanish_stock = Spanish)
+              
+              
+# Exporting full data set to start onward from this point
+
+write_csv(bcn_full, "bcn_full_dataset.csv")
+              
 
 
