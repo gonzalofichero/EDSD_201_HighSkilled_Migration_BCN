@@ -1033,3 +1033,25 @@ corrplot(cor(as.matrix(bcn_full %>% select(Latino_incoming, 7:24))),
 
 
 
+
+#### Checking Mean and Var to see which regression model to use #########
+
+
+bcn_full %>% 
+  select(European_incoming, Latino_incoming) %>% 
+  summarise(euro_avg = mean(European_incoming),
+            euro_sd = sd(European_incoming),
+            latino_avg = mean(Latino_incoming),
+            latino_sd = sd(Latino_incoming),
+            euro_cv = euro_sd/euro_avg,
+            latino_cv = latino_sd/latino_avg
+            )
+# At least for Europeans need Negative Binomial since Var > Mean...
+
+
+# Plotting density incoming for each group
+plot(density(bcn_full$European_incoming), col="blue", main="", xlab="", ylab="")
+lines(density(bcn_full$Latino_incoming), col = "pink")
+title(main = "Density for Incoming Migrants 2016-2018", xlab = "Qty", ylab="")
+legend(1200,0.003,legend=c("Europeans", "Latinos"), col=c("blue", "pink"), lty=1)
+
