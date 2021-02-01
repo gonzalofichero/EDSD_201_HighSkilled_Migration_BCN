@@ -6,6 +6,7 @@ library(ggplot2)
 library(sf)
 library(colorspace)
 library(corrplot)
+library(MASS)
 
 
 #### Loading data  ####
@@ -1055,3 +1056,27 @@ lines(density(bcn_full$Latino_incoming), col = "pink")
 title(main = "Density for Incoming Migrants 2016-2018", xlab = "Qty", ylab="")
 legend(1200,0.003,legend=c("Europeans", "Latinos"), col=c("blue", "pink"), lty=1)
 
+
+
+#### The moment of truth: regression time ####
+
+##### European incoming #####
+bcn_euro_full <- bcn_full %>% 
+                  select(European_incoming, income, avg_rent_2015, 
+                         bars, age_building, median_size_flat, perc_left, perc_indep,
+                         excess_uni, perc_domi_uni_25_40, Teatres, 
+                         sum_old, mean_int_migration, symbolic_index, European_stock)
+
+summary(m_euro <- glm.nb(European_incoming ~ ., data = bcn_euro_full))
+
+
+##### Latino incoming #####
+bcn_latino_full <- bcn_full %>% 
+                    select(Latino_incoming,
+                           income, avg_rent_2015, 
+                           bars, age_building, median_size_flat, perc_left, perc_indep,
+                           excess_uni, perc_domi_uni_25_40, Teatres, 
+                           sum_old, mean_int_migration, symbolic_index, Latino_stock)
+
+
+summary(m_latino <- glm.nb(Latino_incoming ~ ., data = bcn_latino_full))
