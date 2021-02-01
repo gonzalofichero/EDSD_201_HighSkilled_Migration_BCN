@@ -277,10 +277,10 @@ bcn %>%
   pull(NOM) # 5 barris that need new grouping for Europeans
 
 
-
+#### CREATE INDEPENDENT VARIABLES ####
   
 
-####  Foreigners in BCN (2015) = social capital  ####
+#####  Foreigners in BCN (2015) = social capital  #####
 # 
 foreign <- read_csv("02 - Data/2015_domicilis_nacionalitat_espanyola_estrangera.csv")
 
@@ -301,7 +301,7 @@ foreign %>%
 
 
 
-####  Lugares de Culto BCN = social capital?  ####
+#####  Lugares de Culto BCN = social capital?  ####
 # 
 # DISCONTINUED! (better work for non-university degree)
 
@@ -318,7 +318,7 @@ cult %>%
 
 
 
-####  $$$ = economic capital  ####
+#####  $$$ = economic capital  ####
 # 
 
 money <- read_csv("02 - Data/2015_rendatributariamitjanaperpersona.csv")
@@ -338,7 +338,7 @@ bcn_map %>%
   geom_sf(aes(fill = income))
 
 
-####  Bars per Barrio = cultural capital  ####
+#####  Bars per Barrio = cultural capital  ####
 # 
 
 bars <- read_csv("02 - Data/2019_1s_data_set_opendata_terrasses.csv")
@@ -367,7 +367,7 @@ bcn_map %>%
 
 
 
-####  Median Age of Buildings = control  ####
+#####  Median Age of Buildings = control  ####
 # 
 
 age_build <- read_csv("02 - Data/2018_loc_hab_edat_mitjana.csv")
@@ -384,7 +384,7 @@ age_build %>%
 
 
 
-####  Size group flats = control  ####
+#####  Size group flats = control  ####
 # 
 
 size_flat_group <- read_csv("02 - Data/2018_loc_hab_sup.csv")
@@ -404,7 +404,7 @@ size_flat_group %>%
   pivot_wider(names_from = size, values_from = N) 
 
 
-####  Median size flats = control  ####
+#####  Median size flats = control  ####
 # 
 
 size_flat_median <- read_csv("02 - Data/2017_sup_mitjana_habitatge.csv")
@@ -418,7 +418,7 @@ size_flat_median %>%
 
 
 
-####  Size of space by usage = control  ####
+#####  Size of space by usage = control  ####
 # 
 
 size_local_usage <- read_csv("02 - Data/2015_loc_sup.csv")
@@ -433,7 +433,7 @@ size_local_usage %>%
 
 
 
-####  M2 size of each Barcelona Barri  ####
+#####  M2 size of each Barcelona Barri  ####
 # 
 
 size_barri <- read_csv("02 - Data/2015_superficie.csv")
@@ -448,7 +448,7 @@ size_barri %>%
 
 
 
-####  Dynamic stock of net migration by nationality  #####
+#####  Dynamic stock of net migration by nationality  #####
 # 
 
 inm_nac <- read_csv("02 - Data/Time Series Ethnic change/2018_immigrants_nacionalitats.csv")
@@ -490,7 +490,7 @@ bcn_map %>%
 
 
   
-####  Voters (left vs right) from BCN web  #####
+#####  Voters (left vs right) from BCN web  #####
 #
 
 # Tutorial:
@@ -558,7 +558,7 @@ bcn_map %>%
 # https://www.bcn.cat/estadistica/catala/dades/barris/telec/loc/a2015.htm
 
 
-####  Nivel educativo por Barri  #####
+#####  Nivel educativo por Barri  #####
 # 
 
 educ_barri <- read_csv("02 - Data/2015_padro_nivell_academic.csv")
@@ -586,7 +586,7 @@ bcn_map %>%
 
 
 
-####  Population Structure per Barri  ####
+#####  Population Structure per Barri  ####
 #
 
 demo_struc_barri <- read_csv("02 - Data/2015_ine_edat_any_a_any_per_sexe.csv")
@@ -641,7 +641,7 @@ demo_struc_barri_3 <- demo_struc_barri_2 %>%
   summarize(expected_uni_barri = sum(expected_uni)) %>% 
   select(BARRI, expected_uni_barri)
 
-
+######  Real vs Expected University population by BARRI ######
 demo_struc_barri_3 %>% left_join(educ_barri_2, by = "BARRI") %>% 
   mutate(excess_uni = real_uni_barri / expected_uni_barri) -> excess_university_pop
 
@@ -658,7 +658,7 @@ bcn_map %>%
 
 
 
-####  Unitary Households by Barrio 2015 #####
+######  Unitary Households by Barrio 2015 #####
 # 
 
 uni_house <- read_csv("02 - Data/2015_domicilis_nombre_persones.csv")
@@ -684,7 +684,7 @@ bcn_map %>%
 
 
 
-####  Unitary Households by Barrio 2015 for specific age group  #####
+######  Unitary Households by Barrio 2015 for specific age group  #####
 # 
 
 uni_house_age <- read_csv("02 - Data/2015_padro_viu_sola_edat_quinquennal.csv")
@@ -720,9 +720,9 @@ bcn_map %>%
 
 
 
-####  Cultural stuff in BCN with Geo  #######
+####  Cultural stuff in BCN with Geo (DEPRECATED)  #######
 # 
-# DEPRECATED
+# 
 
 # It's and RDF file, so need tutorial to read from web:
 # https://cran.r-project.org/web/packages/rdflib/vignettes/rdf_intro.html
@@ -742,7 +742,7 @@ culture <- read_html(url_cultural, as.data.frame=T, stringsAsFactors = TRUE, enc
 
 
 
-###  Cultural spaces, 2020 data  ########
+#####  Cultural spaces, 2020 data  ########
 # 
 
 culture <- read_csv("02 - Data/C002_Cinemes_teatres_auditoris.csv")
@@ -767,7 +767,7 @@ bcn_map %>%
 
 
 
-####  Average rent per Barri, 2015  ######
+#####  Average rent per Barri, 2015  ######
 # 
 
 rent <- read_csv("02 - Data/2015_lloguer_preu_trim.csv")
@@ -793,7 +793,7 @@ bcn_map %>%
 
 
 
-####  Changes of residence per thousand, 2015  #########
+#####  Changes of residence per thousand, 2015  #########
 # 
 
 int_migration <- read_csv("02 - Data/2015_taxa_migracio_interna.csv")
@@ -814,7 +814,7 @@ bcn_map %>%
 
 
 
-####  New migrants per Barri per 1000 people, 2015  ########
+#####  New migrants per Barri per 1000 people, 2015  ########
 # 
 
 mig_hotspot <- read_csv("02 - Data/2015_taxa_immigracio.csv")
@@ -835,7 +835,7 @@ bcn_map %>%
 
 
 
-####  Since when in Padrón per Barri, 2016  #############
+#####  Since when in Padrón per Barri, 2016  #############
 # 
 
 yearsold_padro <- read_csv("02 - Data/2016_padro_alta_padro.csv")
@@ -875,48 +875,7 @@ bcn_map %>%
 
 
 
-####  MAPPING  ########
-# 
-library(ggplot2)
-library(sf)
-library(colorspace)
-
-# Reading the json with sf::st_read and saving the map information for Argentina
-# web <- "https://opendata-ajuntament.barcelona.cat/data/dataset/808daafa-d9ce-48c0-925a-fa5afdb1ed41/resource/cd800462-f326-429f-a67a-c69b7fc4c50a/download"
-
-bcn_map <- st_read("02 - Data/Maps/0301100100_UNITATS_ADM_POLIGONS.json")
-
-bcn_map2 <- bcn_map %>% filter(SCONJ_DESC == "Barri")
-
-bcn_map3 <- bcn_map2 %>% 
-              left_join(extranjeros_map, by = "BARRI") %>% 
-              left_join(bares_map, by = "BARRI") %>% 
-              left_join(flat_age_map, by = "BARRI") %>% 
-              mutate(dist_foreign = if_else(is.na(dist_foreign), 0, dist_foreign),
-                     mesas = if_else(is.na(mesas), 0, mesas),
-                     age_building = if_else(is.na(age_building), 0, age_building))
-
-
-bcn_map3 %>% 
-  filter(!is.na(dist_foreign)) %>% 
-ggplot() +
-  geom_sf(aes(fill = dist_foreign))
-
-bcn_map3 %>% 
-  #filter(!is.na(dist_foreign)) %>% 
-  ggplot() +
-  geom_sf(aes(fill = mesas))
-
-bcn_map3 %>% 
-  #filter(!is.na(dist_foreign)) %>% 
-  ggplot() +
-  geom_sf(aes(fill = age_building))
-
-
-
-
-
-#### FLICKR data ##########
+##### Flickr data ##########
 # 
 # Academic Research: High Skilled Migration in Barcelona
 
@@ -965,6 +924,52 @@ bcn_map %>%
 
 
 
+
+####  MAPPING  ########
+# 
+library(ggplot2)
+library(sf)
+library(colorspace)
+
+# Reading the json with sf::st_read and saving the map information for Argentina
+# web <- "https://opendata-ajuntament.barcelona.cat/data/dataset/808daafa-d9ce-48c0-925a-fa5afdb1ed41/resource/cd800462-f326-429f-a67a-c69b7fc4c50a/download"
+
+bcn_map <- st_read("02 - Data/Maps/0301100100_UNITATS_ADM_POLIGONS.json")
+
+bcn_map2 <- bcn_map %>% filter(SCONJ_DESC == "Barri")
+
+bcn_map3 <- bcn_map2 %>% 
+              left_join(extranjeros_map, by = "BARRI") %>% 
+              left_join(bares_map, by = "BARRI") %>% 
+              left_join(flat_age_map, by = "BARRI") %>% 
+              mutate(dist_foreign = if_else(is.na(dist_foreign), 0, dist_foreign),
+                     mesas = if_else(is.na(mesas), 0, mesas),
+                     age_building = if_else(is.na(age_building), 0, age_building))
+
+
+bcn_map3 %>% 
+  filter(!is.na(dist_foreign)) %>% 
+ggplot() +
+  geom_sf(aes(fill = dist_foreign))
+
+bcn_map3 %>% 
+  #filter(!is.na(dist_foreign)) %>% 
+  ggplot() +
+  geom_sf(aes(fill = mesas))
+
+bcn_map3 %>% 
+  #filter(!is.na(dist_foreign)) %>% 
+  ggplot() +
+  geom_sf(aes(fill = age_building))
+
+
+
+
+
+
+
+
+
 #### Pulling everything together... #########
 
 bcn_full <- bcn %>% 
@@ -1004,13 +1009,27 @@ bcn_full <- read.csv("bcn_full_dataset.csv")
 
 
 
+
+
 #### Checking correlations #########
 
-# Correlation 1to1 for European incoming
-corrplot(cor(as.matrix(bcn_full %>% select(European_incoming, 7:24))), method="circle", type = "upper", tl.srt=45)
+# Please, run cor_mtest.R file to create cor.mtest function necessary for analysis...
+
+##### Correlation 1to1 for European incoming #####
+p.mat.euro <- cor.mtest(bcn_full %>% select(European_incoming, 7:24))
+
+corrplot(cor(as.matrix(bcn_full %>% select(European_incoming, 7:24))), 
+         type="upper", p.mat = p.mat.euro, sig.level = 0.01, insig = "blank")
 
 
-# Correlation 1to1 for Latino incoming
-corrplot(cor(as.matrix(bcn_full %>% select(Latino_incoming, 7:24))), method="circle", type = "upper", tl.srt=45)
+#####  Correlation 1to1 for Latino incoming #####
+
+p.mat.latino <- cor.mtest(bcn_full %>% select(Latino_incoming, 7:24))
+
+corrplot(cor(as.matrix(bcn_full %>% select(Latino_incoming, 7:24))), 
+         type="upper", p.mat = p.mat.latino, sig.level = 0.01, insig = "blank")
+
+
+
 
 
