@@ -5,6 +5,8 @@ library(readr)
 library(ggplot2)
 library(sf)
 library(colorspace)
+library(corrplot)
+
 
 #### Loading data  ####
 bcn <- read.csv("02 - Data/Datos_inmi_BCN.csv", sep = ";", header = T, encoding = "UTF-8")
@@ -998,5 +1000,17 @@ bcn_full <- bcn %>%
 
 write_csv(bcn_full, "bcn_full_dataset.csv")
 
+bcn_full <- read.csv("bcn_full_dataset.csv")
+
+
+
+#### Checking correlations #########
+
+# Correlation 1to1 for European incoming
+corrplot(cor(as.matrix(bcn_full %>% select(European_incoming, 7:24))), method="circle", type = "upper", tl.srt=45)
+
+
+# Correlation 1to1 for Latino incoming
+corrplot(cor(as.matrix(bcn_full %>% select(Latino_incoming, 7:24))), method="circle", type = "upper", tl.srt=45)
 
 
