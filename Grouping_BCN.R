@@ -1074,8 +1074,9 @@ summary(m_euro.1 <- glm.nb(European_incoming ~  # Economic capital
                                                 mean_int_migration + 
                                                 age_building + 
                                                 median_size_flat +
-                                                perc_left + 
-                                                perc_indep - 1, 
+                                                perc_indep +
+                                                perc_left 
+                                                 - 1, 
                           data = bcn_full))
 
 
@@ -1094,8 +1095,9 @@ summary(m_euro.2 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_left + 
-                                               perc_indep - 1, 
+                                               perc_indep +
+                                               perc_left 
+                                                - 1, 
                          data = bcn_full))
 
 
@@ -1116,8 +1118,9 @@ summary(m_euro.3 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_left + 
-                                               perc_indep - 1, 
+                                               perc_indep +
+                                               perc_left 
+                                                - 1, 
                          data = bcn_full))
 
 
@@ -1138,8 +1141,8 @@ summary(m_euro.4 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_left + 
                                                perc_indep +
+                                               perc_left + 
                                                # AR(1)
                                                European_stock - 1, 
                          data = bcn_full))
@@ -1159,8 +1162,9 @@ summary(m_latino.1 <- glm.nb(Latino_incoming ~ # Economic capital
                                              mean_int_migration + 
                                              age_building + 
                                              median_size_flat +
-                                             perc_left + 
-                                             perc_indep - 1, 
+                                             perc_indep +
+                                             perc_left 
+                                              - 1, 
                            data = bcn_full))
 
 ##### Latino incoming: model 2 (economic + social + cultural + control) #####
@@ -1178,8 +1182,9 @@ summary(m_latino.2 <- glm.nb(Latino_incoming ~ # Economic capital
                                              mean_int_migration + 
                                              age_building + 
                                              median_size_flat +
-                                             perc_left + 
-                                             perc_indep - 1, 
+                                             perc_indep +
+                                             perc_left 
+                                              - 1, 
                            data = bcn_full))
 
 
@@ -1200,8 +1205,9 @@ summary(m_latino.3 <- glm.nb(Latino_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_left + 
-                                               perc_indep - 1, 
+                                               perc_indep +
+                                               perc_left 
+                                                - 1, 
                              data = bcn_full))
 
 
@@ -1222,8 +1228,8 @@ summary(m_latino.4 <- glm.nb(Latino_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
+                                               perc_indep +                
                                                perc_left + 
-                                               perc_indep +
                                                # AR(1)
                                                Latino_stock - 1, 
                              data = bcn_full))
@@ -1233,7 +1239,10 @@ summary(m_latino.4 <- glm.nb(Latino_incoming ~ # Economic capital
 #### Results European ####
 stargazer(m_euro.1, m_euro.2, m_euro.3, m_euro.4, type = "html", out="euro_result.html")
 
+anova(m_euro.1, m_euro.2, m_euro.3, m_euro.4, test="Chisq")
 
 
 #### Results Latino ####
 stargazer(m_latino.1, m_latino.2, m_latino.3, m_latino.4, type = "html", out="latino_result.html")
+
+anova(m_latino.1, m_latino.2, m_latino.3, m_latino.4, test="Chisq")
