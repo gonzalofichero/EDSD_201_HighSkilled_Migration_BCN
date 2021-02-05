@@ -7,6 +7,7 @@ library(sf)
 library(colorspace)
 library(corrplot)
 library(MASS)
+library(stargazer)
 
 
 #### Loading data  ####
@@ -1060,23 +1061,179 @@ legend(1200,0.003,legend=c("Europeans", "Latinos"), col=c("blue", "pink"), lty=1
 
 #### The moment of truth: regression time ####
 
-##### European incoming #####
-bcn_euro_full <- bcn_full %>% 
-                  select(European_incoming, income, avg_rent_2015, 
-                         bars, age_building, median_size_flat, perc_left, perc_indep,
-                         excess_uni, perc_domi_uni_25_40, Teatres, 
-                         sum_old, mean_int_migration, symbolic_index, European_stock)
+##### European incoming: model 1 (economic + social + control) #####
+summary(m_euro.1 <- glm.nb(European_incoming ~  # Economic capital
+                                                income + 
+                                                avg_rent_2015 +
+                                                # Social capital
+                                                bars + 
+                                                perc_domi_uni_25_40 +
+                                                excess_uni +
+                                                # Control
+                                                sum_old +
+                                                mean_int_migration + 
+                                                age_building + 
+                                                median_size_flat +
+                                                perc_left + 
+                                                perc_indep - 1, 
+                          data = bcn_full))
 
-summary(m_euro <- glm.nb(European_incoming ~ ., data = bcn_euro_full))
+
+##### European incoming: model 2 (economic + social + cultural + control) #####
+summary(m_euro.2 <- glm.nb(European_incoming ~ # Economic capital
+                                               income + 
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               perc_domi_uni_25_40 +
+                                               excess_uni +
+                                               # Cultural
+                                               Teatres +   
+                                               # Control
+                                               sum_old +
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left + 
+                                               perc_indep - 1, 
+                         data = bcn_full))
 
 
-##### Latino incoming #####
-bcn_latino_full <- bcn_full %>% 
-                    select(Latino_incoming,
-                           income, avg_rent_2015, 
-                           bars, age_building, median_size_flat, perc_left, perc_indep,
-                           excess_uni, perc_domi_uni_25_40, Teatres, 
-                           sum_old, mean_int_migration, symbolic_index, Latino_stock)
+##### European incoming: model 3 (economic + social + cultural + symbolic + control) #####
+summary(m_euro.3 <- glm.nb(European_incoming ~ # Economic capital
+                                               income + 
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               perc_domi_uni_25_40 +
+                                               excess_uni +
+                                               # Cultural
+                                               Teatres +   
+                                               # Symbolic
+                                               symbolic_index +
+                                               # Control
+                                               sum_old +
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left + 
+                                               perc_indep - 1, 
+                         data = bcn_full))
 
 
-summary(m_latino <- glm.nb(Latino_incoming ~ ., data = bcn_latino_full))
+##### European incoming: model 4 (economic + social + cultural + symbolic + control + AR(1)) #####
+summary(m_euro.4 <- glm.nb(European_incoming ~ # Economic capital
+                                               income + 
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               perc_domi_uni_25_40 +
+                                               excess_uni +
+                                               # Cultural
+                                               Teatres +   
+                                               # Symbolic
+                                               symbolic_index +
+                                               # Control
+                                               sum_old +
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left + 
+                                               perc_indep +
+                                               # AR(1)
+                                               European_stock - 1, 
+                         data = bcn_full))
+
+
+
+##### Latino incoming: model 1 (economic + social + control) #####
+summary(m_latino.1 <- glm.nb(Latino_incoming ~ # Economic capital
+                                             income + 
+                                             avg_rent_2015 +
+                                             # Social capital
+                                             bars + 
+                                             perc_domi_uni_25_40 +
+                                             excess_uni +
+                                             # Control
+                                             sum_old +
+                                             mean_int_migration + 
+                                             age_building + 
+                                             median_size_flat +
+                                             perc_left + 
+                                             perc_indep - 1, 
+                           data = bcn_full))
+
+##### Latino incoming: model 2 (economic + social + cultural + control) #####
+summary(m_latino.2 <- glm.nb(Latino_incoming ~ # Economic capital
+                                             income + 
+                                             avg_rent_2015 +
+                                             # Social capital
+                                             bars + 
+                                             perc_domi_uni_25_40 +
+                                             excess_uni +
+                                             # Cultural
+                                             Teatres +   
+                                             # Control
+                                             sum_old +
+                                             mean_int_migration + 
+                                             age_building + 
+                                             median_size_flat +
+                                             perc_left + 
+                                             perc_indep - 1, 
+                           data = bcn_full))
+
+
+##### Latino incoming: model 3 (economic + social + cultural + symbolic + control) #####
+summary(m_latino.3 <- glm.nb(Latino_incoming ~ # Economic capital
+                                               income + 
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               perc_domi_uni_25_40 +
+                                               excess_uni +
+                                               # Cultural
+                                               Teatres +   
+                                               # Symbolic
+                                               symbolic_index +
+                                               # Control
+                                               sum_old +
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left + 
+                                               perc_indep - 1, 
+                             data = bcn_full))
+
+
+##### Latino incoming: model 4 (economic + social + cultural + symbolic + control + AR(1)) #####
+summary(m_latino.4 <- glm.nb(Latino_incoming ~ # Economic capital
+                                               income + 
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               perc_domi_uni_25_40 +
+                                               excess_uni +
+                                               # Cultural
+                                               Teatres +   
+                                               # Symbolic
+                                               symbolic_index +
+                                               # Control
+                                               sum_old +
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left + 
+                                               perc_indep +
+                                               # AR(1)
+                                               Latino_stock - 1, 
+                             data = bcn_full))
+
+
+
+#### Results European ####
+stargazer(m_euro.1, m_euro.2, m_euro.3, m_euro.4, type = "html", out="euro_result.html")
+
+
+
+#### Results Latino ####
+stargazer(m_latino.1, m_latino.2, m_latino.3, m_latino.4, type = "html", out="latino_result.html")
