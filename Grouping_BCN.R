@@ -1319,13 +1319,49 @@ summary(m_latino.6 <- glm.nb(Latino_incoming ~ # Economic capital
                              data = bcn_full_norm))
 
 
-#### Results European ####
+
+
+
+#### Control fitting ####
+
+
+##### Results European #####
+###### Regression Tables (stargazer) ######
 stargazer(m_euro.1, m_euro.2, m_euro.3, m_euro.4, m_euro.5, m_euro.6, type = "html", out="euro_result.html")
+###### ANOVA ######
+anova(m_euro.1, m_euro.2, m_euro.3, m_euro.4, m_euro.5, m_euro.6, test="Chisq")
 
-anova(m_euro.1, m_euro.2, m_euro.3, m_euro.4, test="Chisq")
 
-
-#### Results Latino ####
+##### Results Latino #####
+###### Regression Tables (stargazer) ######
 stargazer(m_latino.1, m_latino.2, m_latino.3, m_latino.4, m_latino.5, m_latino.6, type = "html", out="latino_result.html")
+###### ANOVA ######
+anova(m_latino.1, m_latino.2, m_latino.3, m_latino.4, m_latino.5, m_latino.6, test="Chisq")
 
-anova(m_latino.1, m_latino.2, m_latino.3, m_latino.4, test="Chisq")
+
+##### Residuals model 5 #####
+
+###### Adding residual data to full data.frame #####
+bcn_full_resid <- cbind(bcn_full, abs(m_euro.5$residuals), abs(m_latino.5$residuals))
+names(bcn_full_resid)[27] <- "euro_m5_residuals"
+names(bcn_full_resid)[28] <- "latino_m5_residuals"
+
+
+###### BARRI code from int to "00" factor #####
+bcn_full_resid %>% 
+mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn_full_resid
+
+
+###### Euro model 5 residuals by MAP #####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(bcn_full_resid, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = euro_m5_residuals))
+
+###### Latino model 5 residuals by MAP #####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(bcn_full_resid, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = latino_m5_residuals))
