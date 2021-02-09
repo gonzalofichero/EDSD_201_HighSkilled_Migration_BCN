@@ -187,12 +187,25 @@ bcn %>%
   left_join(national, by = "nation") %>% 
   mutate(perc_pop = total / total_nat) -> relative_nation_map
 
+##### 3. Mapping Incoming  ####
 
+##### 3.1. Mapping European Incoming  ####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_nation_map %>% filter(nation == "European"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") +
+  guides(fill=guide_legend(title="% European inmigrants"))
+
+
+##### 3.2. Mapping European Incoming  ####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_nation_map %>% filter(nation == "Latino"), by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") +
   guides(fill=guide_legend(title="% Latino inmigrants"))
 
 
@@ -210,14 +223,58 @@ bcn %>%
   left_join(sex, by = "Sex") %>% 
   mutate(perc_pop = total / total_nat) -> relative_sex_map
 
-
+##### 3.3. Mapping European Women Incoming  ####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_sex_map %>% filter(Sex == "Dona"), by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") + 
   guides(fill=guide_legend(title="% European Women inmigrants"))
 
+
+##### 3.4. Mapping European Men Incoming  ####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_sex_map %>% filter(Sex == "Home"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") +
+  guides(fill=guide_legend(title="% European Men inmigrants"))
+
+
+
+# Creating map for relative inmigration by sex group
+bcn %>% 
+  filter(nation == "Latino") %>% 
+  group_by(Sex) %>% 
+  summarise(total_nat = sum(Casos, na.rm = T)) -> sex_lat
+
+bcn %>% 
+  filter(nation == "Latino") %>% 
+  group_by(BARRI, NOM, Sex) %>% 
+  summarize(total = sum(Casos, na.rm = T)) %>%
+  left_join(sex, by = "Sex") %>% 
+  mutate(perc_pop = total / total_nat) -> relative_sex_map_lat
+
+##### 3.5. Mapping Latino Women Incoming  ####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_sex_map_lat %>% filter(Sex == "Dona"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") + 
+  guides(fill=guide_legend(title="% Latino Women migs"))
+
+
+##### 3.6. Mapping Latino Men Incoming  ####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_sex_map_lat %>% filter(Sex == "Home"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Blues") +
+  guides(fill=guide_legend(title="% Latino Men migs"))
 
 
 
@@ -1358,7 +1415,7 @@ bcn_map %>%
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = euro_m5_residuals)) +
-  scale_fill_continuous_sequential(palette="Reds")
+  scale_fill_continuous_sequential(palette= "Reds")
 
 ###### Latino model 5 residuals by MAP #####
 bcn_map %>% 
