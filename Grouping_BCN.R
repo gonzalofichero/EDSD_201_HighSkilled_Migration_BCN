@@ -1357,14 +1357,16 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = euro_m5_residuals))
+  geom_sf(aes(fill = euro_m5_residuals)) +
+  scale_fill_continuous_sequential(palette="Reds")
 
 ###### Latino model 5 residuals by MAP #####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = latino_m5_residuals))
+  geom_sf(aes(fill = latino_m5_residuals)) +
+  scale_fill_continuous_sequential(palette="Reds")
 
 
 ###### Euro model 5 residuals vs Dependent var #####
