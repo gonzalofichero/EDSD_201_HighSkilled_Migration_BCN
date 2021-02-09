@@ -1365,3 +1365,11 @@ bcn_map %>%
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = latino_m5_residuals))
+
+
+###### Euro model 5 residuals vs Dependent var #####
+bcn_full_resid %>% ggplot(aes(y=euro_m5_residuals, x=scale(European_stock))) + geom_point()
+
+
+###### Latino model 5 residuals vs Dependent var #####
+bcn_full_resid %>% ggplot(aes(y=latino_m5_residuals, x=scale(Latino_stock))) + geom_point()
