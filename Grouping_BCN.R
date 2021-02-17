@@ -430,7 +430,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(bares_map, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = bars_pop))
+  geom_sf(aes(fill = bars_pop)) +
+  guides(fill=guide_legend(title="Bars per 25-40 population")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 
@@ -718,7 +721,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(excess_university_pop, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = excess_uni))
+  geom_sf(aes(fill = excess_uni)) +
+  guides(fill=guide_legend(title="University Population \n (Real vs Expected)")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 
@@ -782,7 +788,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(uni_house_age, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = perc_domi_uni_25_40))
+  geom_sf(aes(fill = perc_domi_uni_25_40)) +
+  guides(fill=guide_legend(title="% Unitary Households \n (25 to 40 years old)")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 
@@ -824,13 +833,22 @@ culture %>%
   summarize(qty_culture = n()) %>% 
   pivot_wider(names_from = type_culture, values_from = qty_culture) %>% 
   rename(BARRI = CODI_BARRI) -> culture_map
+
+pop_bcn %>% 
+  select(BARRI) %>% 
+  left_join(culture_map, by = "BARRI") %>% 
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  mutate(Culture = Cinemas + Teatres) -> culture_map2
   
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
-  left_join(culture_map, by = "BARRI") %>%
+  left_join(culture_map2, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = Cinemas))
+  geom_sf(aes(fill = Culture)) +
+  guides(fill=guide_legend(title="# Theatres + Cinemas (2020)")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 
@@ -1433,7 +1451,10 @@ bcn_map %>%
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = euro_m5_residuals)) +
-  scale_fill_continuous_sequential(palette= "Reds")
+  scale_fill_continuous_sequential(palette= "Reds") +
+  guides(fill=guide_legend(title="Residuals model Euro X")) +
+  theme_bw()
+
 
 ###### Latino model 5 residuals by MAP #####
 bcn_map %>% 
@@ -1441,7 +1462,9 @@ bcn_map %>%
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = latino_m5_residuals)) +
-  scale_fill_continuous_sequential(palette="Reds")
+  scale_fill_continuous_sequential(palette="Reds") +
+  guides(fill=guide_legend(title="Residuals model Latino X")) +
+  theme_bw()
 
 
 ###### Euro model 5 residuals vs Dependent var #####
