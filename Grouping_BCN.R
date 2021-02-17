@@ -1067,8 +1067,11 @@ bcn_map3 %>%
 
 #### Pulling everything together... #########
 
-bcn_full <- bcn %>% 
-              filter(nation == "European" | nation == "Latino") %>% 
+bcn_full <- bcn %>%
+            mutate(nation = case_when(nation == "European" ~ "European",
+                                      nation == "Latino" ~ "Latino",
+                                      TRUE ~ "Others")) %>% 
+              #filter(nation == "European" | nation == "Latino") %>% 
               group_by(BARRI, NOM, nation) %>% 
               summarize(total = sum(Casos, na.rm = T)) %>% 
               pivot_wider(names_from = nation, values_from = total) %>% 
@@ -1154,11 +1157,91 @@ legend(1200,0.003,legend=c("Europeans", "Latinos"), col=c("blue", "pink"), lty=1
 
 #### Standardizing the indep variables for interpretation ####
 
-bcn_full_norm <- cbind(bcn_full[,1:6], scale(as.matrix(bcn_full[,7:26])))
+bcn_full_norm <- data.frame(bcn_full[,1:7], bcn_full[,24], scale(as.matrix(bcn_full[,8:23])), scale(as.matrix(bcn_full[,25:28])) )
 
-
+bcn_full_norm %>% 
+  mutate(all_inflow = European_incoming + Latino_incoming + Others,
+         Cultural_eq = Cinemas + Teatres) -> bcn_full_norm
 
 #### The moment of truth: regression time ####
+
+#### Approach 1: All together vs European vs Latino. All features. ####
+
+##### All inflow #####
+summary(m_all_full <- glm.nb(all_inflow ~ # Economic capital
+                                avg_rent_2015 +
+                                # Social capital
+                                bars + 
+                                perc_domi_uni_25_40 +
+                                excess_uni +
+                                # Cultural
+                                Cultural_eq +   
+                                # Symbolic
+                                symbolic_index +
+                                # Control
+                                sum_old +
+                                mean_int_migration + 
+                                age_building + 
+                                median_size_flat +
+                                perc_left, 
+                             data = bcn_full_norm))
+##### European inflow #####
+summary(m_euro_full <- glm.nb(European_incoming ~ # Economic capital
+                               avg_rent_2015 +
+                               # Social capital
+                               bars + 
+                               perc_domi_uni_25_40 +
+                               excess_uni +
+                               # Cultural
+                               Cultural_eq +   
+                               # Symbolic
+                               symbolic_index +
+                               # Control
+                               sum_old +
+                               mean_int_migration + 
+                               age_building + 
+                               median_size_flat +
+                               perc_left, 
+                             data = bcn_full_norm))
+##### Latino inflow #####
+summary(m_latino_full <- glm.nb(Latino_incoming ~ # Economic capital
+                                avg_rent_2015 +
+                                # Social capital
+                                bars + 
+                                perc_domi_uni_25_40 +
+                                excess_uni +
+                                # Cultural
+                                Cultural_eq +   
+                                # Symbolic
+                                symbolic_index +
+                                # Control
+                                sum_old +
+                                mean_int_migration + 
+                                age_building + 
+                                median_size_flat +
+                                perc_left, 
+                              data = bcn_full_norm))
+
+
+
+
+summary(m_euro.1 <- glm.nb(European_incoming ~  # Economic capital
+                             income + 
+                             avg_rent_2015 +
+                             # Social capital
+                             bars + 
+                             perc_domi_uni_25_40 +
+                             excess_uni +
+                             # Control
+                             sum_old +
+                             mean_int_migration + 
+                             age_building + 
+                             median_size_flat +
+                             perc_indep +
+                             perc_left 
+                           , 
+                           data = bcn_full_norm))
+
 
 ##### European modeling #####
 
@@ -1416,6 +1499,12 @@ summary(m_latino.6 <- glm.nb(Latino_incoming ~ # Economic capital
 
 
 #### Control fitting ####
+
+##### Results Approach 1 #####
+###### Regression Tables (stargazer) ######
+stargazer(m_all_full, m_euro_full, m_latino_full, type = "html", out="approach1_result.html")
+###### ANOVA ######
+anova(m_all_full, m_euro_full, m_latino_full, test="Chisq")
 
 
 ##### Results European #####
