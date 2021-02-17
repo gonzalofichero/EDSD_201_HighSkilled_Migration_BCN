@@ -72,8 +72,9 @@ bcn_map %>%
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = Latino)) +
-  guides(fill=guide_legend(title="% stock Latino 2016")) +
-  scale_fill_continuous_sequential(palette= "Green")
+  guides(fill=guide_legend(title="% stock HS \n Latino (2015)")) +
+  scale_fill_continuous_sequential(palette= "Green") +
+  theme_bw()
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
@@ -81,15 +82,17 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = Spanish)) +
   guides(fill=guide_legend(title="% stock Spaniards 2016")) +
-  scale_fill_continuous_sequential(palette= "Reds")
+  scale_fill_continuous_sequential(palette= "Reds") +
+  theme_bw
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = European)) +
-  guides(fill=guide_legend(title="% stock European 2016")) +
-  scale_fill_continuous_sequential(palette= "Blue")
+  guides(fill=guide_legend(title="% stock HS \n European (2015)")) +
+  scale_fill_continuous_sequential(palette= "Blue") +
+  theme_bw()
 
 
 ####  Quick tables ####
@@ -199,17 +202,19 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blues") +
-  guides(fill=guide_legend(title="% European inmigrants"))
+  guides(fill=guide_legend(title="% HS European \n inflow (2016-2018)")) +
+  theme_bw()
 
 
-##### 3.2. Mapping European Incoming  ####
+##### 3.2. Mapping Latino Incoming  ####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_nation_map %>% filter(nation == "Latino"), by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
-  scale_fill_continuous_sequential(palette= "Blues") +
-  guides(fill=guide_legend(title="% Latino inmigrants"))
+  scale_fill_continuous_sequential(palette= "Green") +
+  guides(fill=guide_legend(title="% HS Latino \n inflow (2016-2018)")) +
+  theme_bw()
 
 
 
