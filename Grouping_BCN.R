@@ -1485,7 +1485,7 @@ stargazer(m_latino.5, m_euro.6,
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Constant"),
-          column.labels=c("European inflow", "Latino inflow"),
+          column.labels=c("Latino inflow", "European inflow"),
           dep.var.labels = c("",""),
           type = "html", out="comparing_result.html")
 
