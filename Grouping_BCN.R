@@ -1223,25 +1223,7 @@ summary(m_latino_full <- glm.nb(Latino_incoming ~ # Economic capital
                               data = bcn_full_norm))
 
 
-
-
-summary(m_euro.1 <- glm.nb(European_incoming ~  # Economic capital
-                             income + 
-                             avg_rent_2015 +
-                             # Social capital
-                             bars + 
-                             perc_domi_uni_25_40 +
-                             excess_uni +
-                             # Control
-                             sum_old +
-                             mean_int_migration + 
-                             age_building + 
-                             median_size_flat +
-                             perc_indep +
-                             perc_left 
-                           , 
-                           data = bcn_full_norm))
-
+#### Approach 2:European vs Latino. Reducing features. ####
 
 ##### European modeling #####
 
@@ -1258,7 +1240,6 @@ summary(m_euro.1 <- glm.nb(European_incoming ~  # Economic capital
                                                 mean_int_migration + 
                                                 age_building + 
                                                 median_size_flat +
-                                                perc_indep +
                                                 perc_left 
                                                 , 
                           data = bcn_full_norm))
@@ -1279,7 +1260,6 @@ summary(m_euro.2 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_indep +
                                                perc_left 
                                                , 
                          data = bcn_full_norm))
@@ -1302,7 +1282,6 @@ summary(m_euro.3 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_indep +
                                                perc_left 
                                                , 
                          data = bcn_full_norm))
@@ -1310,14 +1289,13 @@ summary(m_euro.3 <- glm.nb(European_incoming ~ # Economic capital
 
 ###### European incoming: model 4 (economic + social + cultural + symbolic + control + AR(1)) ######
 summary(m_euro.4 <- glm.nb(European_incoming ~ # Economic capital
-                                               income + 
                                                avg_rent_2015 +
                                                # Social capital
                                                bars + 
                                                perc_domi_uni_25_40 +
                                                excess_uni +
                                                # Cultural
-                                               Teatres +   
+                                               Cultural_eq +   
                                                # Symbolic
                                                symbolic_index +
                                                # Control
@@ -1325,45 +1303,29 @@ summary(m_euro.4 <- glm.nb(European_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_indep +
-                                               perc_left + 
-                                               # AR(1)
-                                               European_stock, 
+                                               perc_left,
                          data = bcn_full_norm))
 
 
 ###### European incoming: model 5 (taking out no explanatory dimensions) ######
 summary(m_euro.5 <- glm.nb(European_incoming ~ # Economic capital
-                             income + 
-                             avg_rent_2015 +
-                             # Social capital
-                             bars + 
-                             perc_domi_uni_25_40 +
-                             # Cultural
-                             Teatres +   
-                             # Symbolic
-                             symbolic_index +
-                             # Control
-                             mean_int_migration + 
-                             perc_indep +
-                             # AR(1)
-                             European_stock, 
-                           data = bcn_full_norm))
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               # Control
+                                               mean_int_migration +
+                                               age_building + 
+                                               median_size_flat, 
+                                             data = bcn_full_norm))
 
 ###### European incoming: model 6 (model 5 - indepe - symbolic) ######
 summary(m_euro.6 <- glm.nb(European_incoming ~ # Economic capital
-                             income + 
                              avg_rent_2015 +
                              # Social capital
                              bars + 
-                             perc_domi_uni_25_40 +
-                             # Cultural
-                             Teatres +   
-                             # Symbolic
                              # Control
-                             mean_int_migration + 
-                             # AR(1)
-                             European_stock, 
+                             age_building + 
+                             median_size_flat, 
                            data = bcn_full_norm))
 
 
@@ -1382,7 +1344,6 @@ summary(m_latino.1 <- glm.nb(Latino_incoming ~ # Economic capital
                                              mean_int_migration + 
                                              age_building + 
                                              median_size_flat +
-                                             perc_indep +
                                              perc_left 
                                              , 
                            data = bcn_full_norm))
@@ -1402,7 +1363,6 @@ summary(m_latino.2 <- glm.nb(Latino_incoming ~ # Economic capital
                                              mean_int_migration + 
                                              age_building + 
                                              median_size_flat +
-                                             perc_indep +
                                              perc_left 
                                              , 
                            data = bcn_full_norm))
@@ -1425,7 +1385,6 @@ summary(m_latino.3 <- glm.nb(Latino_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_indep +
                                                perc_left 
                                                , 
                              data = bcn_full_norm))
@@ -1433,14 +1392,13 @@ summary(m_latino.3 <- glm.nb(Latino_incoming ~ # Economic capital
 
 ###### Latino incoming: model 4 (economic + social + cultural + symbolic + control + AR(1)) ######
 summary(m_latino.4 <- glm.nb(Latino_incoming ~ # Economic capital
-                                               income + 
                                                avg_rent_2015 +
                                                # Social capital
                                                bars + 
                                                perc_domi_uni_25_40 +
                                                excess_uni +
                                                # Cultural
-                                               Teatres +   
+                                               Cultural_eq +   
                                                # Symbolic
                                                symbolic_index +
                                                # Control
@@ -1448,53 +1406,20 @@ summary(m_latino.4 <- glm.nb(Latino_incoming ~ # Economic capital
                                                mean_int_migration + 
                                                age_building + 
                                                median_size_flat +
-                                               perc_indep +                
-                                               perc_left + 
-                                               # AR(1)
-                                               Latino_stock, 
+                                               perc_left, 
                              data = bcn_full_norm))
 
 
 ###### Latino incoming: model 5 (taking out no explanatory dimensions) ######
 summary(m_latino.5 <- glm.nb(Latino_incoming ~ # Economic capital
-                               income + 
-                               avg_rent_2015 +
-                               # Social capital
-                               bars + 
-                               perc_domi_uni_25_40 +
-                               # Cultural
-                               Teatres +   
-                               # Symbolic
-                               symbolic_index +
-                               # Control
-                               mean_int_migration + 
-                               age_building +
-                               perc_indep +
-                               perc_left + 
-                               # AR(1)
-                               Latino_stock, 
-                             data = bcn_full_norm))
-
-
-###### Latino incoming: model 6 (model 5 - indepe - symbolic) ######
-summary(m_latino.6 <- glm.nb(Latino_incoming ~ # Economic capital
-                               income + 
-                               avg_rent_2015 +
-                               # Social capital
-                               bars + 
-                               perc_domi_uni_25_40 +
-                               # Cultural
-                               Teatres +   
-                               # Symbolic
-                               # Control
-                               mean_int_migration + 
-                               age_building +
-                               perc_left + 
-                               # AR(1)
-                               Latino_stock, 
-                             data = bcn_full_norm))
-
-
+                                               avg_rent_2015 +
+                                               # Social capital
+                                               bars + 
+                                               mean_int_migration + 
+                                               age_building + 
+                                               median_size_flat +
+                                               perc_left, 
+                                             data = bcn_full_norm))
 
 
 
@@ -1503,30 +1428,34 @@ summary(m_latino.6 <- glm.nb(Latino_incoming ~ # Economic capital
 ##### Results Approach 1 #####
 ###### Regression Tables (stargazer) ######
 stargazer(m_all_full, m_euro_full, m_latino_full, type = "html", out="approach1_result.html")
-###### ANOVA ######
-anova(m_all_full, m_euro_full, m_latino_full, test="Chisq")
+###### AIC ######
+AIC(m_all_full, m_euro_full, m_latino_full)
 
 
 ##### Results European #####
 ###### Regression Tables (stargazer) ######
-stargazer(m_euro.1, m_euro.2, m_euro.3, m_euro.4, m_euro.5, m_euro.6, type = "html", out="euro_result.html")
+stargazer(m_euro.4, m_euro.5, m_euro.6, type = "html", out="euro_result.html")
 ###### ANOVA ######
-anova(m_euro.1, m_euro.2, m_euro.3, m_euro.4, m_euro.5, m_euro.6, test="Chisq")
+anova(m_euro.6, m_euro.5, m_euro.4, test="Chisq")
 
 
 ##### Results Latino #####
 ###### Regression Tables (stargazer) ######
-stargazer(m_latino.1, m_latino.2, m_latino.3, m_latino.4, m_latino.5, m_latino.6, type = "html", out="latino_result.html")
+stargazer(m_latino.4, m_latino.5, type = "html", out="latino_result.html")
 ###### ANOVA ######
-anova(m_latino.1, m_latino.2, m_latino.3, m_latino.4, m_latino.5, m_latino.6, test="Chisq")
+anova(m_latino.5, m_latino.4, test="Chisq")
+
+
+##### Comparing Origin Results #####
+stargazer(m_latino.5, m_euro.6, type = "html", out="comparing_result.html")
 
 
 ##### Residuals model 5 #####
 
 ###### Adding residual data to full data.frame #####
-bcn_full_resid <- cbind(bcn_full, abs(m_euro.5$residuals), abs(m_latino.5$residuals))
-names(bcn_full_resid)[27] <- "euro_m5_residuals"
-names(bcn_full_resid)[28] <- "latino_m5_residuals"
+bcn_full_resid <- data.frame(bcn_full, abs(m_euro.6$residuals), abs(m_latino.5$residuals))
+names(bcn_full_resid)[29] <- "euro_m6_residuals"
+names(bcn_full_resid)[30] <- "latino_m5_residuals"
 
 
 ###### BARRI code from int to "00" factor #####
@@ -1534,12 +1463,12 @@ bcn_full_resid %>%
 mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0"))) -> bcn_full_resid
 
 
-###### Euro model 5 residuals by MAP #####
+###### Euro model 6 residuals by MAP #####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(bcn_full_resid, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = euro_m5_residuals)) +
+  geom_sf(aes(fill = euro_m6_residuals)) +
   scale_fill_continuous_sequential(palette= "Reds") +
   guides(fill=guide_legend(title="Residuals model Euro X")) +
   theme_bw()
@@ -1556,8 +1485,8 @@ bcn_map %>%
   theme_bw()
 
 
-###### Euro model 5 residuals vs Dependent var #####
-bcn_full_resid %>% ggplot(aes(y=euro_m5_residuals, x=scale(European_stock))) + geom_point()
+###### Euro model 6 residuals vs Dependent var #####
+bcn_full_resid %>% ggplot(aes(y=euro_m6_residuals, x=scale(European_stock))) + geom_point()
 
 
 ###### Latino model 5 residuals vs Dependent var #####
