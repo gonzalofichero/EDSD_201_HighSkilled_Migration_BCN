@@ -1470,7 +1470,7 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = euro_m6_residuals)) +
   scale_fill_continuous_sequential(palette= "Reds") +
-  guides(fill=guide_legend(title="Residuals model Euro X")) +
+  guides(fill=guide_legend(title="Residuals model Euro")) +
   theme_bw()
 
 
@@ -1481,7 +1481,7 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = latino_m5_residuals)) +
   scale_fill_continuous_sequential(palette="Reds") +
-  guides(fill=guide_legend(title="Residuals model Latino X")) +
+  guides(fill=guide_legend(title="Residuals model Latino")) +
   theme_bw()
 
 
