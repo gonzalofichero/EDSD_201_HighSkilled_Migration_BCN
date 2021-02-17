@@ -72,21 +72,24 @@ bcn_map %>%
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = Latino)) +
-  guides(fill=guide_legend(title="% stock Latino 2016"))
+  guides(fill=guide_legend(title="% stock Latino 2016")) +
+  scale_fill_continuous_sequential(palette= "Green")
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = Spanish)) +
-  guides(fill=guide_legend(title="% stock Spaniards 2016"))
+  guides(fill=guide_legend(title="% stock Spaniards 2016")) +
+  scale_fill_continuous_sequential(palette= "Reds")
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(origin_bcn_3, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = European)) +
-  guides(fill=guide_legend(title="% stock European 2016"))
+  guides(fill=guide_legend(title="% stock European 2016")) +
+  scale_fill_continuous_sequential(palette= "Blue")
 
 
 ####  Quick tables ####
