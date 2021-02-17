@@ -1428,7 +1428,7 @@ summary(m_latino.5 <- glm.nb(Latino_incoming ~ # Economic capital
 ##### Results Approach 1 #####
 ###### Regression Tables (stargazer) ######
 stargazer(m_all_full, m_euro_full, m_latino_full, 
-          covariate.labels = c("Avg Rent ($/m2)", "Bars per population", 
+          covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
                                "Cultural Equipment", "Symbolic index",
                                "Avg Age in Padron",
@@ -1437,6 +1437,7 @@ stargazer(m_all_full, m_euro_full, m_latino_full,
                                "Left Wing votes (municipal elections)",
                                "Constant"),
           column.labels=c("All inflow", "European inflow", "Latino inflow"),
+          dep.var.labels = c("","",""),
           type = "html", out="approach1_result.html")
 ###### AIC ######
 AIC(m_all_full, m_euro_full, m_latino_full)
@@ -1445,7 +1446,7 @@ AIC(m_all_full, m_euro_full, m_latino_full)
 ##### Results European #####
 ###### Regression Tables (stargazer) ######
 stargazer(m_euro.4, m_euro.5, m_euro.6,
-          covariate.labels = c("Avg Rent ($/m2)", "Bars per population", 
+          covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
                                "Cultural Equipment", "Symbolic index",
                                "Avg Age in Padron",
@@ -1453,7 +1454,8 @@ stargazer(m_euro.4, m_euro.5, m_euro.6,
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Constant"),
-          column.labels="European inflow",
+          column.labels=c("","European inflow",""),
+          dep.var.labels = c("","",""),
           type = "html", out="euro_result.html")
 ###### ANOVA ######
 anova(m_euro.6, m_euro.5, m_euro.4, test="Chisq")
@@ -1462,7 +1464,7 @@ anova(m_euro.6, m_euro.5, m_euro.4, test="Chisq")
 ##### Results Latino #####
 ###### Regression Tables (stargazer) ######
 stargazer(m_latino.4, m_latino.5,
-          covariate.labels = c("Avg Rent ($/m2)", "Bars per population", 
+          covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
                                "Cultural Equipment", "Symbolic index",
                                "Avg Age in Padron",
@@ -1470,6 +1472,7 @@ stargazer(m_latino.4, m_latino.5,
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Constant"),
+          dep.var.labels = c("",""),
           column.labels = "Latino inflow",
           type = "html", out="latino_result.html")
 ###### ANOVA ######
@@ -1478,11 +1481,12 @@ anova(m_latino.5, m_latino.4, test="Chisq")
 
 ##### Comparing Origin Results #####
 stargazer(m_latino.5, m_euro.6, 
-          covariate.labels = c("Avg Rent ($/m2)", "Bars per population", "Rate internal Mobility",
+          covariate.labels = c("Avg Rent", "Bars per population", "Rate internal Mobility",
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Constant"),
           column.labels=c("European inflow", "Latino inflow"),
+          dep.var.labels = c("",""),
           type = "html", out="comparing_result.html")
 
 
