@@ -201,7 +201,7 @@ bcn_map %>%
   left_join(relative_nation_map %>% filter(nation == "European"), by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
-  scale_fill_continuous_sequential(palette= "Blues") +
+  scale_fill_continuous_sequential(palette= "Blue") +
   guides(fill=guide_legend(title="% HS European \n inflow (2016-2018)")) +
   theme_bw()
 
@@ -856,7 +856,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(rent, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = avg_rent_2015))
+  geom_sf(aes(fill = avg_rent_2015)) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  guides(fill=guide_legend(title="Avg Rent ($/m2)")) +
+  theme_bw()
 
 
 
@@ -980,14 +983,21 @@ flickr %>%
   mutate(BARRI = as.factor(str_pad(BARRI, width=2, side="left", pad="0")),
          symbolic_index = round(Flickr_search/max(Flickr_search, na.rm = T),2)) %>%
   rename(flickr_qty = Flickr_search) %>% 
-  select(BARRI, symbolic_index) -> flickr
+  select(BARRI, symbolic_index) %>% 
+  mutate(symbolic_group = case_when(symbolic_index < 0.1 ~ "01. (0, 0.1)",
+                                    symbolic_index >= 0.1 &  symbolic_index < 0.2 ~ "02. [0.1, 0.2)",
+                                    symbolic_index >= 0.2 &  symbolic_index < 0.5 ~ "03. [0.2, 0.5)",
+                                    TRUE ~ "04. [0.5, 1]")) -> flickr
 
 
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(flickr, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = symbolic_index))
+  geom_sf(aes(fill = symbolic_group)) +
+  scale_fill_discrete_sequential(palette= "Purples") +
+  guides(fill=guide_legend(title="Symbolic index")) +
+  theme_bw()
 
 
 
