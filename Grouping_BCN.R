@@ -165,15 +165,16 @@ bcn %>%
   summarize(total = sum(Casos, na.rm = T)) %>% 
   arrange(desc(total)) -> nationalities
 
-# Grouping by into Europeans vs Latinos:
+# Grouping by into Europeans vs Latinos vs East Europeans:
 bcn %>% 
   mutate(nation = case_when(as.character(Birth_Country) %in% c("Resta Unió Europea", "Itàlia", "França", "Regne Unir", "Alemanya") ~ "European",
+                            as.character(Birth_Country) %in% c("Geòrgia", "Resta Europa", "Romania", "Rússia", "Ucraïna") ~ "European.East",
                             as.character(Birth_Country) %in% c("Argentina", "Veneçuela", "Colòmbia", "Brasil", "Mèxic", "Xile", "Perú", "Equador", "República Dominicana", "Hondures", "Uruguai", "Bolívia", "Paraguai", "Cuba") ~ "Latino",
                             TRUE ~ as.character(Birth_Country))) -> bcn
 
 # Check:
 bcn %>% 
-  filter(nation == "European" | nation == "Latino") %>% 
+  filter(nation == "European" | nation == "Latino" | nation == "European.East") %>% 
   group_by(BARRI, NOM, Sex, nation) %>% 
   summarize(total = sum(Casos, na.rm = T)) %>% 
   pivot_wider(names_from = nation, values_from = total) %>% 
@@ -182,12 +183,12 @@ bcn %>%
 
 # Creating map for relative inmigration by national group
 bcn %>% 
-  filter(nation == "European" | nation == "Latino") %>% 
+  filter(nation == "European" | nation == "Latino" | nation == "European.East") %>% 
   group_by(nation) %>% 
   summarise(total_nat = sum(Casos, na.rm = T)) -> national
 
 bcn %>% 
-  filter(nation == "European" | nation == "Latino") %>% 
+  filter(nation == "European" | nation == "Latino" | nation == "European.East") %>% 
   group_by(BARRI, NOM, nation) %>% 
   summarize(total = sum(Casos, na.rm = T)) %>%
   left_join(national, by = "nation") %>% 
@@ -202,7 +203,7 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blue") +
-  guides(fill=guide_legend(title="% HS European \n inflow (2016-2018)")) +
+  guides(fill=guide_legend(title="% HS European (EU) \n inflow (2016-2018)")) +
   theme_bw()
 
 
@@ -214,6 +215,16 @@ bcn_map %>%
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Green") +
   guides(fill=guide_legend(title="% HS Latino \n inflow (2016-2018)")) +
+  theme_bw()
+
+##### 3.3. Mapping East European Incoming  ####
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(relative_nation_map %>% filter(nation == "European.East"), by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = perc_pop)) +
+  scale_fill_continuous_sequential(palette= "Red") +
+  guides(fill=guide_legend(title="% HS East Europe \n inflow (2016-2018)")) +
   theme_bw()
 
 
