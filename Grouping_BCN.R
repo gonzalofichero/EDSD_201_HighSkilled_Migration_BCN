@@ -414,7 +414,7 @@ bcn_map %>%
   left_join(money_v2, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = income)) +
-  guides(fill=guide_legend(title="Average Income")) +
+  guides(fill=guide_legend(title="Median Income")) +
   scale_fill_continuous_sequential(palette= "Purples") +
   theme_bw()
 
@@ -1028,7 +1028,7 @@ bcn_map %>%
   ggplot() +
   geom_sf(aes(fill = symbolic_group)) +
   scale_fill_discrete_sequential(palette= "Purples") +
-  guides(fill=guide_legend(title="Symbolic index")) +
+  guides(fill=guide_legend(title="Flickr index")) +
   theme_bw()
 
 
