@@ -413,7 +413,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(money_v2, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = income))
+  geom_sf(aes(fill = income)) +
+  guides(fill=guide_legend(title="Average Income")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 #####  Bars per Barrio = cultural capital  ####
