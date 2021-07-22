@@ -467,6 +467,15 @@ age_build %>%
   rename(BARRI = Codi_barri) -> flat_age_map
 
 
+bcn_map %>% 
+  filter(SCONJ_DESC == "Barri") %>% 
+  left_join(flat_age_map, by = "BARRI") %>%
+  ggplot() +
+  geom_sf(aes(fill = age_building)) +
+  guides(fill=guide_legend(title="Median Age of Buildings")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
+
 
 #####  Size group flats = control  ####
 # 
@@ -570,7 +579,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(total_movement, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = foreign_net_move))
+  geom_sf(aes(fill = foreign_net_move)) +
+  guides(fill=guide_legend(title="Rate Internal mobility of foreigners")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
   
@@ -634,7 +646,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(votes, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = perc_left))
+  geom_sf(aes(fill = perc_left)) +
+  guides(fill=guide_legend(title="Left-wing votes (municipal elections 2015)")) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  theme_bw()
 
 
 
@@ -973,7 +988,10 @@ bcn_map %>%
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(sumyears_padro_map, by = "BARRI") %>%
   ggplot() +
-  geom_sf(aes(fill = sum_old))
+  geom_sf(aes(fill = sum_old)) +
+  scale_fill_continuous_sequential(palette= "Purples") +
+  guides(fill=guide_legend(title="Average Time of Residence")) +
+  theme_bw()
 
 
 
