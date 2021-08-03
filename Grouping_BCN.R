@@ -1197,6 +1197,32 @@ bcn_full_norm %>%
 
 #### The moment of truth: regression time ####
 
+#### Approach 1.0: Control Variables only: . ####
+
+##### European inflow #####
+summary(m_euro_control <- glm.nb(European_incoming ~ # Economic capital
+                                # Control
+                                sum_old +
+                                mean_int_migration + 
+                                age_building + 
+                                #median_size_flat +
+                                perc_left, 
+                              data = bcn_full_norm))
+
+##### Latino inflow #####
+summary(m_latino_control <- glm.nb(Latino_incoming ~ # Economic capital
+                                  # Control
+                                  sum_old +
+                                  mean_int_migration + 
+                                  age_building + 
+                                  #median_size_flat +
+                                  perc_left, 
+                                data = bcn_full_norm))
+
+
+
+
+
 #### Approach 1: All together vs European vs Latino. All features. ####
 
 ##### All inflow #####
