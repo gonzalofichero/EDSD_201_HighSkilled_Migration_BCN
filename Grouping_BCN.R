@@ -169,7 +169,7 @@ bcn %>%
 bcn %>% 
   mutate(nation = case_when(as.character(Birth_Country) %in% c("Resta Unió Europea", "Itàlia", "França", "Regne Unir", "Alemanya") ~ "European",
                             as.character(Birth_Country) %in% c("Geòrgia", "Resta Europa", "Romania", "Rússia", "Ucraïna") ~ "European.East",
-                            as.character(Birth_Country) %in% c("Argentina", "Veneçuela", "Colòmbia", "Brasil", "Mèxic", "Xile", "Perú", "Equador", "República Dominicana", "Hondures", "Uruguai", "Bolívia", "Paraguai", "Cuba") ~ "Latino",
+                            as.character(Birth_Country) %in% c("Argentina", "Veneçuela", "Colòmbia", "Brasil", "Mèxic", "Xile", "Perú", "Equador", "República Dominicana", "Hondures", "Uruguai", "Bolívia", "Paraguai", "Cuba", "Resta América") ~ "Latino",
                             TRUE ~ as.character(Birth_Country))) -> bcn
 
 # Check:
