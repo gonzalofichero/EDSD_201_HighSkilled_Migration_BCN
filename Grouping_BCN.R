@@ -1219,6 +1219,16 @@ summary(m_latino_control <- glm.nb(Latino_incoming ~ # Economic capital
                                   perc_left, 
                                 data = bcn_full_norm))
 
+##### Results Approach 1.0 #####
+stargazer(m_euro_control, m_latino_control, 
+          covariate.labels = c("Avg Time of Residence",
+                               "Rate internal Mobility",
+                               "Avg Age of Building",
+                               "Left Wing votes (municipal elections)",
+                               "Intercept"),
+          column.labels=c("European inflow", "Latino inflow"),
+          dep.var.labels = c("",""),
+          type = "html", out="01 - results_approach_control.html")
 
 
 
