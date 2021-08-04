@@ -1258,8 +1258,9 @@ m_latino_explain6 <- glm.nb(Latino_incoming ~
 
 
 ##### Results Approach 2.0 #####
-stargazer(m_euro_explain1, m_euro_explain2, m_euro_explain3,
-          m_euro_explain5, m_euro_explain6, m_euro_explain7,
+stargazer(m_euro_explain0,
+          m_euro_explain1, m_euro_explain2, m_euro_explain3,
+          m_euro_explain4, m_euro_explain5, m_euro_explain6,
           covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
                                "Cultural Equipment", "Symbolic index",
@@ -1268,12 +1269,13 @@ stargazer(m_euro_explain1, m_euro_explain2, m_euro_explain3,
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Intercept"),
-          column.labels= c("","","","","",""),
+          column.labels= c("Control","","","","","",""),
           dep.var.labels = c("","","","","",""),
           type = "html", out="02a - results_approach_explain_europe.html")
 
 
-stargazer(m_latino_explain1, m_latino_explain2, m_latino_explain3,
+stargazer(m_latino_explain0,
+          m_latino_explain1, m_latino_explain2, m_latino_explain3,
           m_latino_explain4, m_latino_explain5, m_latino_explain6,
           covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
@@ -1283,7 +1285,7 @@ stargazer(m_latino_explain1, m_latino_explain2, m_latino_explain3,
                                "Avg Age of Building", "Median Size of Flat",
                                "Left Wing votes (municipal elections)",
                                "Intercept"),
-          column.labels= c("","","","","",""),
+          column.labels= c("Control", "","","","","",""),
           dep.var.labels = c("","","","","",""),
           type = "html", out="02b - results_approach_explain_latino.html")
 
