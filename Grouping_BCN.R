@@ -1235,7 +1235,7 @@ stargazer(m_euro_control, m_latino_control,
 #### Approach 2.0: Adding variables ####
 
 ##### European inflow #####
-m_euro_explain7 <- glm.nb(European_incoming ~
+m_euro_explain6 <- glm.nb(European_incoming ~
                                    avg_rent_2015 + 
                                    bars + 
                                    perc_domi_uni_25_40 + 
@@ -1258,12 +1258,12 @@ m_latino_explain6 <- glm.nb(Latino_incoming ~
 
 
 ##### Results Approach 2.0 #####
-stargazer(m_euro_explain0,
+stargazer(m_euro_control,
           m_euro_explain1, m_euro_explain2, m_euro_explain3,
-          m_euro_explain4, m_euro_explain5, m_euro_explain6,
+          m_euro_explain4, m_euro_explain6, m_euro_explain7,
           covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
-                               "Cultural Equipment", "Symbolic index",
+                               "Cultural Equipment", "Flickr index",
                                "Avg Age in Padron",
                                "Rate internal Mobility",
                                "Avg Age of Building", "Median Size of Flat",
@@ -1274,12 +1274,12 @@ stargazer(m_euro_explain0,
           type = "html", out="02a - results_approach_explain_europe.html")
 
 
-stargazer(m_latino_explain0,
+stargazer(m_latino_control,
           m_latino_explain1, m_latino_explain2, m_latino_explain3,
           m_latino_explain4, m_latino_explain5, m_latino_explain6,
           covariate.labels = c("Avg Rent", "Bars per population", 
                                "Unitary Households", "University Population",
-                               "Cultural Equipment", "Symbolic index",
+                               "Cultural Equipment", "Flickr index",
                                "Avg Age in Padron",
                                "Rate internal Mobility",
                                "Avg Age of Building", "Median Size of Flat",
