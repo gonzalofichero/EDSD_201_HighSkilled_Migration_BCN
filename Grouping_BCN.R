@@ -1197,7 +1197,7 @@ bcn_full_norm %>%
 
 #### The moment of truth: regression time ####
 
-#### Approach 1.0: Control Variables only: . ####
+#### Approach 1.0: Control Variables only ####
 
 ##### European inflow #####
 summary(m_euro_control <- glm.nb(European_incoming ~ # Economic capital
@@ -1232,6 +1232,67 @@ stargazer(m_euro_control, m_latino_control,
 
 
 
+#### Approach 2.0: Adding variables ####
+
+##### European inflow #####
+m_euro_explain7 <- glm.nb(European_incoming ~
+                                   avg_rent_2015 + 
+                                   bars + 
+                                   perc_domi_uni_25_40 + 
+                                   excess_uni + 
+                                   Cultural_eq +   
+                                   symbolic_index + 
+                                   sum_old + mean_int_migration +  age_building + perc_left, 
+                                 data = bcn_full_norm)
+
+##### Latino inflow #####
+m_latino_explain6 <- glm.nb(Latino_incoming ~ 
+                                      avg_rent_2015 + 
+                                      bars + 
+                                      perc_domi_uni_25_40 + 
+                                      excess_uni + 
+                                      Cultural_eq +   
+                                      symbolic_index + 
+                                      sum_old + mean_int_migration +  age_building + perc_left,
+                                   data = bcn_full_norm)
+
+
+##### Results Approach 2.0 #####
+stargazer(m_euro_explain1, m_euro_explain2, m_euro_explain3,
+          m_euro_explain5, m_euro_explain6, m_euro_explain7,
+          covariate.labels = c("Avg Rent", "Bars per population", 
+                               "Unitary Households", "University Population",
+                               "Cultural Equipment", "Symbolic index",
+                               "Avg Age in Padron",
+                               "Rate internal Mobility",
+                               "Avg Age of Building", "Median Size of Flat",
+                               "Left Wing votes (municipal elections)",
+                               "Intercept"),
+          column.labels= c("","","","","",""),
+          dep.var.labels = c("","","","","",""),
+          type = "html", out="02a - results_approach_explain_europe.html")
+
+
+stargazer(m_latino_explain1, m_latino_explain2, m_latino_explain3,
+          m_latino_explain4, m_latino_explain5, m_latino_explain6,
+          covariate.labels = c("Avg Rent", "Bars per population", 
+                               "Unitary Households", "University Population",
+                               "Cultural Equipment", "Symbolic index",
+                               "Avg Age in Padron",
+                               "Rate internal Mobility",
+                               "Avg Age of Building", "Median Size of Flat",
+                               "Left Wing votes (municipal elections)",
+                               "Intercept"),
+          column.labels= c("","","","","",""),
+          dep.var.labels = c("","","","","",""),
+          type = "html", out="02b - results_approach_explain_latino.html")
+
+
+
+
+
+
+#### DEPRECATED ####
 
 #### Approach 1: All together vs European vs Latino. All features. ####
 
