@@ -1329,13 +1329,13 @@ m_int_bars <- glm.nb(inflow ~
 ##### Results Approach 2.0 #####
 stargazer(m_int_rent, m_int_bars,
           covariate.labels = c("Avg Rent", "Bars per population", 
-                               "Unitary Households", "University Population",
-                               "Cultural Equipment", "Flickr index",
                                "Avg Age in Padron",
                                "Rate internal Mobility",
                                "Avg Age of Building",
                                "Left Wing votes (municipal elections)",
-                               "Intercept"),
+                               "Intercept",
+                               "Interaction Rent * Latino",
+                               "Interaction Bars * Latino"),
           column.labels= c("",""),
           dep.var.labels = c("",""),
           type = "html", out="03 - results_approach_interaction.html")
