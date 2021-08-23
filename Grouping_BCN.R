@@ -1328,7 +1328,9 @@ m_int_bars <- glm.nb(inflow ~
 
 ##### Results Approach 2.0 #####
 stargazer(m_int_rent, m_int_bars,
-          covariate.labels = c("Avg Rent", "Bars per population", 
+          covariate.labels = c("Avg Rent",
+                               "Origin = Latino",
+                               "Bars per population", 
                                "Avg Age in Padron",
                                "Rate internal Mobility",
                                "Avg Age of Building",
