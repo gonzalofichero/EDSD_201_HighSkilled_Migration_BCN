@@ -1291,6 +1291,56 @@ stargazer(m_latino_control,
 
 
 
+#### Approach 3.0: Interaction ####
+
+##### New dataset with Origin (European/Latino) as independent variable #####
+bcn_full_norm %>% 
+select(European_incoming, avg_rent_2015, bars, 
+       sum_old, mean_int_migration, age_building, perc_left) %>% 
+rename(inflow = European_incoming) %>% 
+mutate (origin = "European") -> int_europe
+
+bcn_full_norm %>% 
+  select(Latino_incoming, avg_rent_2015, bars, 
+         sum_old, mean_int_migration, age_building, perc_left) %>% 
+rename(inflow = Latino_incoming) %>% 
+mutate (origin = "Latino") -> int_latino
+
+interaction_dataset <- rbind(int_europe, int_latino)
+
+
+
+##### Interaction with Av Rent #####
+m_int_rent <- glm.nb(inflow ~
+                            avg_rent_2015 *  origin + 
+                            bars +
+                            sum_old + mean_int_migration +  age_building + perc_left, 
+                          data = interaction_dataset)
+
+##### Interaction with Av Rent #####
+m_int_bars <- glm.nb(inflow ~
+                            avg_rent_2015 + 
+                            bars * origin + 
+                            sum_old + mean_int_migration +  age_building + perc_left, 
+                          data = interaction_dataset)
+
+
+
+##### Results Approach 2.0 #####
+stargazer(m_int_rent, m_int_bars,
+          covariate.labels = c("Avg Rent", "Bars per population", 
+                               "Unitary Households", "University Population",
+                               "Cultural Equipment", "Flickr index",
+                               "Avg Age in Padron",
+                               "Rate internal Mobility",
+                               "Avg Age of Building",
+                               "Left Wing votes (municipal elections)",
+                               "Intercept"),
+          column.labels= c("",""),
+          dep.var.labels = c("",""),
+          type = "html", out="03 - results_approach_interaction.html")
+
+
 
 
 
