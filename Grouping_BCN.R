@@ -1317,7 +1317,7 @@ m_int_rent <- glm.nb(inflow ~
                             sum_old + mean_int_migration +  age_building + perc_left, 
                           data = interaction_dataset)
 
-##### Interaction with Av Rent #####
+##### Interaction with Bars #####
 m_int_bars <- glm.nb(inflow ~
                             avg_rent_2015 + 
                             bars * origin + 
@@ -1325,9 +1325,16 @@ m_int_bars <- glm.nb(inflow ~
                           data = interaction_dataset)
 
 
+##### Interaction with both explanatory variables in 1 regression #####
+m_int_both <- glm.nb(inflow ~
+                 avg_rent_2015 * origin + 
+                 bars * origin + 
+                 sum_old + mean_int_migration +  age_building + perc_left, 
+               data = interaction_dataset)
 
-##### Results Approach 2.0 #####
-stargazer(m_int_rent, m_int_bars,
+
+##### Results Approach 3.0 #####
+stargazer(m_int_both,
           covariate.labels = c("Avg Rent",
                                "Origin = Latino",
                                "Bars per population", 
@@ -1338,9 +1345,9 @@ stargazer(m_int_rent, m_int_bars,
                                "Interaction Rent * Latino",
                                "Interaction Bars * Latino",
                                "Intercept"),
-          column.labels= c("",""),
-          dep.var.labels = c("",""),
-          type = "html", out="03 - results_approach_interaction.html")
+          column.labels= c(""),
+          dep.var.labels = c(""),
+          type = "html", out="03b - results_approach_interaction_both.html")
 
 
 
