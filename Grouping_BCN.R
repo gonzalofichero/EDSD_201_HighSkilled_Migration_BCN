@@ -246,20 +246,22 @@ bcn %>%
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_sex_map %>% filter(Sex == "Dona"), by = "BARRI") %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blues") + 
-  guides(fill=guide_legend(title="% European Women inmigrants"))
+  guides(fill=guide_legend(title="% HS European Women \n inflow (2016-2018)"))
 
 
 ##### 3.4. Mapping European Men Incoming  ####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_sex_map %>% filter(Sex == "Home"), by = "BARRI") %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blues") +
-  guides(fill=guide_legend(title="% European Men inmigrants"))
+  guides(fill=guide_legend(title="% HS European Men \n inflow (2016-2018)"))
 
 
 
@@ -280,20 +282,22 @@ bcn %>%
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_sex_map_lat %>% filter(Sex == "Dona"), by = "BARRI") %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blues") + 
-  guides(fill=guide_legend(title="% Latino Women migs"))
+  guides(fill=guide_legend(title="% HS Latino Women \n inflow (2016-2018)"))
 
 
 ##### 3.6. Mapping Latino Men Incoming  ####
 bcn_map %>% 
   filter(SCONJ_DESC == "Barri") %>% 
   left_join(relative_sex_map_lat %>% filter(Sex == "Home"), by = "BARRI") %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
   ggplot() +
   geom_sf(aes(fill = perc_pop)) +
   scale_fill_continuous_sequential(palette= "Blues") +
-  guides(fill=guide_legend(title="% Latino Men migs"))
+  guides(fill=guide_legend(title="% HS Latino Men \n inflow (2016-2018)"))
 
 
 
