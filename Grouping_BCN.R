@@ -476,7 +476,7 @@ bcn_map %>%
   left_join(flat_age_map, by = "BARRI") %>%
   ggplot() +
   geom_sf(aes(fill = age_building)) +
-  guides(fill=guide_legend(title="Median Age of Buildings")) +
+  guides(fill=guide_legend(title="Averrage Age of Buildings")) +
   scale_fill_continuous_sequential(palette= "Purples") +
   theme_bw()
 
